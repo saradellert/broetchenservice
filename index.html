@@ -1,80 +1,211 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Brötchenservice</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brötchen-Bestellung</title>
   <style>
     body {
       font-family: sans-serif;
+      background-color: #DFDCD7;
+      color: #292826;
+      margin: 0;
       padding: 2rem;
     }
     h1 {
       text-align: center;
+      margin-bottom: 0.25rem;
     }
-    .liefertag {
-      border: 1px solid #ccc;
-      padding: 1rem;
+    p.subtext {
+      text-align: center;
+      margin-top: 0;
       margin-bottom: 2rem;
     }
-    .brotchen-block {
+    .section {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      max-width: 700px;
+      margin-inline: auto;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .form-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    label {
+      flex: 1 1 100%;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    .flex-row {
       display: flex;
       gap: 1rem;
-      margin-bottom: 0.5rem;
     }
-    button {
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: #292826;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 1rem;
       margin-top: 1rem;
+    }
+    .btn-outline {
+      background: none;
+      border: 2px dashed #292826;
+      color: #292826;
+    }
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    .lieferblock {
+      border-top: 1px solid #ccc;
+      margin-top: 2rem;
+      padding-top: 1rem;
+    }
+    .total {
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>Brötchenservice</h1>
-  <form id="brotchenForm">
-    <div id="liefertageContainer"></div>
-    <button type="button" onclick="neuerLiefertag()">➕ Neuer Liefertag</button>
-    <br><br>
-    <button type="submit">Abschicken</button>
+  <h1>Brötchen-Bestellung</h1>
+  <p class="subtext">Bestellen Sie frische Brötchen für Ihre Ferienwohnung</p>
+
+  <form id="orderForm">
+    <div class="section">
+      <div class="form-group">
+        <label for="name">Name *</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="wohnung">Ferienwohnung *</label>
+        <select id="wohnung" name="wohnung" required>
+          <option value="">Wählen Sie Ihre Ferienwohnung</option>
+          <option>La Maison</option>
+          <option>Maisonette Beach</option>
+          <option>Suite Maritim</option>
+          <option>Loft am See</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section" id="lieferTage">
+      <!-- Dynamische Lieferblöcke werden hier eingefügt -->
+    </div>
+
+    <div style="text-align:center">
+      <button type="button" class="btn btn-outline" onclick="addLieferTag()">+ Weiteren Liefertag hinzufügen</button>
+    </div>
+
+    <div class="total" id="gesamtpreis">Gesamtpreis: 0,00€</div>
+
+    <div style="text-align:center">
+      <button type="submit" class="btn">Bestellung absenden</button>
+    </div>
   </form>
 
   <script>
-    let liefertagIndex = 0;
+    const broetchenPreise = {
+      "Schnittbrötchen": 0.4,
+      "Körnerbrötchen": 0.5,
+      "Müslibrötchen": 0.6,
+      "Dinkelbrötchen": 0.55
+    };
+    const wochenPreis = 1.7;
+    const wochenendePreis = 2.0;
 
-    function neuerLiefertag() {
-      const container = document.getElementById('liefertageContainer');
-      const tagDiv = document.createElement('div');
-      tagDiv.className = 'liefertag';
-      tagDiv.id = `liefertag-${liefertagIndex}`;
+    function isWochenende(dateStr) {
+      const d = new Date(dateStr.split(".").reverse().join("-"));
+      return d.getDay() === 0 || d.getDay() === 6; // So oder Sa
+    }
 
-      tagDiv.innerHTML = `
-        <h3>Liefertag</h3>
-        <label>Datum: <input type="date" name="datum-${liefertagIndex}"></label>
-        <div id="sorten-${liefertagIndex}">
+    function addLieferTag() {
+      const container = document.getElementById("lieferTage");
+      const index = container.children.length + 1;
+
+      const block = document.createElement("div");
+      block.className = "lieferblock";
+      block.innerHTML = `
+        <div class="form-group">
+          <label>Datum *</label>
+          <input type="text" name="datum" placeholder="dd.mm.yyyy" required onchange="updateBlock(this)">
         </div>
-        <button type="button" onclick="neueSorte(${liefertagIndex})">➕ Weitere Sorte hinzufügen</button>
+        <div class="form-group sortenContainer"></div>
+        <button type="button" class="btn btn-small btn-outline" onclick="addSorte(this)">+ Brötchensorte hinzufügen</button>
       `;
-      container.appendChild(tagDiv);
-      neueSorte(liefertagIndex);
-      liefertagIndex++;
+      container.appendChild(block);
+      addSorte(block.querySelector(".btn"));
     }
 
-    function neueSorte(index) {
-      const sortenContainer = document.getElementById(`sorten-${index}`);
-      const div = document.createElement('div');
-      div.className = 'brotchen-block';
-      div.innerHTML = `
-        <input type="text" name="sorte-${index}[]" placeholder="Brötchensorte" />
-        <input type="number" name="menge-${index}[]" placeholder="Anzahl" min="1" />
-      `;
-      sortenContainer.appendChild(div);
+    function addSorte(button) {
+      const container = button.parentElement.querySelector(".sortenContainer");
+      const dateInput = button.parentElement.querySelector("input[name='datum']");
+      const date = dateInput.value;
+      const wochenende = isWochenende(date);
+
+      const select = document.createElement("select");
+      select.name = "sorte";
+      select.required = true;
+
+      const defaultOpt = document.createElement("option");
+      defaultOpt.value = "";
+      defaultOpt.innerText = "Brötchensorte wählen";
+      select.appendChild(defaultOpt);
+
+      for (const sorte in broetchenPreise) {
+        if (sorte === "Müslibrötchen" && wochenende) continue;
+        const opt = document.createElement("option");
+        opt.value = sorte;
+        opt.innerText = sorte;
+        select.appendChild(opt);
+      }
+
+      const menge = document.createElement("input");
+      menge.type = "number";
+      menge.name = "menge";
+      menge.min = 1;
+      menge.value = 1;
+      menge.required = true;
+
+      const row = document.createElement("div");
+      row.className = "form-group flex-row";
+      row.appendChild(select);
+      row.appendChild(menge);
+
+      container.appendChild(row);
     }
 
-    document.getElementById('brotchenForm').addEventListener('submit', function(e) {
+    function updateBlock(dateInput) {
+      const block = dateInput.closest(".lieferblock");
+      const container = block.querySelector(".sortenContainer");
+      container.innerHTML = "";
+      addSorte(block.querySelector(".btn"));
+    }
+
+    document.getElementById("orderForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      alert("Formular abgesendet! Verbindung zu Google Sheets folgt per Script.");
+      alert("Formular abgeschickt – Integration folgt.");
     });
-
-    // Standard: 1 Liefertag vorfüllen
-    neuerLiefertag();
   </script>
 </body>
 </html>
