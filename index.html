@@ -64,9 +64,10 @@
             cursor: pointer;
             margin-top: 1.5rem;
             transition: background-color 0.2s ease;
+            width: 100%; /* Sorgt für gleichmäßige Button-Breite */
         }
         .btn:hover { background-color: #1a1a1a; }
-        .btn-small { font-size: 0.9rem; padding: 0.6rem 1rem; margin-top: 1rem; }
+        .btn-small { font-size: 0.9rem; padding: 0.6rem 1rem; margin-top: 1rem; width: auto; }
 
         .dynamic-row {
             display: grid;
@@ -82,7 +83,7 @@
             border-radius: 50%; transition: background-color 0.2s ease;
         }
         .remove-btn:hover { background-color: #FEEBEA; }
-        .remove-btn svg { width: 20px; height: 20px; stroke: var(--danger-color); stroke-width: 2; }
+        .remove-btn svg { width: 20px; height: 20px; stroke: var(--danger-color); }
         
         .delivery-day-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -90,7 +91,7 @@
         }
         .delivery-day-header input[type="date"] { width: auto; }
 
-        #seite2, #loading-overlay { display: none; }
+        #seite2, #loading-overlay, #success-container { display: none; }
         
         #loading-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -114,52 +115,72 @@
         }
         .navi { display: flex; justify-content: space-between; gap: 1rem; }
 
-        /* === RESPONSIVE CSS FÜR MOBILE GERÄTE === */
         @media (max-width: 600px) {
-            body {
-                padding: 0.5rem;
-            }
-            .container {
-                padding: 1rem;
-            }
-            .section-heading {
-                font-size: 1.2rem;
-            }
-            input, select, .btn {
-                font-size: 0.9rem;
-                padding: 0.7rem;
-            }
-            .btn {
-                 padding: 0.8rem 1rem;
-            }
-            .dynamic-row {
-                grid-template-columns: 1fr 60px auto; /* Menge-Feld noch schmaler */
-                gap: 0.5rem;
-            }
-            .price-box {
-                font-size: 1.2rem;
-            }
+            body { padding: 0.5rem; }
+            .container { padding: 1rem; }
+            .section-heading { font-size: 1.2rem; }
+            input, select, .btn { font-size: 0.9rem; padding: 0.7rem; }
+            .btn { padding: 0.8rem 1rem; }
+            .dynamic-row { grid-template-columns: 1fr 60px auto; gap: 0.5rem; }
+            .price-box { font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
+    
     <div id="form-container">
+        <div id="seite1">
+            <div class="container">
+                <h2 class="section-heading">Ihre Daten</h2>
+                <label for="name">Name</label>
+                <input type="text" id="name" required placeholder="Max Mustermann">
+                
+                <label for="email">E-Mail</label>
+                <input type="email" id="email" required placeholder="max.mustermann@example.com">
+                
+                <label for="wohnung">Wohnung / Apartment</label>
+                <input type="text" id="wohnung" required placeholder="z.B. Wohnung 5 oder Seeblick">
+                
+                <button id="btn-to-page2" class="btn">Weiter zur Brötchenauswahl</button>
+            </div>
         </div>
+
+        <div id="seite2">
+            <div id="lieferbereich">
+                </div>
+            
+            <div class="container">
+                <button id="btn-add-day" class="btn btn-small" style="width: auto;">+ Weiteren Liefertag hinzufügen</button>
+                <div class="price-box">Gesamtpreis: <span id="gesamtpreis">0,00 €</span></div>
+                
+                <div class="navi">
+                    <button id="btn-to-page1" class="btn">Zurück</button>
+                    <button id="btn-submit" class="btn">Bestellung absenden</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="success-container">
+        <div class="container">
+            <div id="success-message">
+                ✅<br><br>
+                <strong>Vielen Dank für Ihre Bestellung!</strong>
+                <p>Eine Bestätigung wurde an Ihre E-Mail-Adresse gesendet. Wir wünschen Ihnen einen schönen Aufenthalt!</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 1rem; font-weight: 500;">Bestellung wird gesendet...</p>
+    </div>
     
     <script>
-        // ... (Der JavaScript-Code bleibt fast identisch, nur die sendHeightToParent-Funktion wird leicht angepasst)
-
-        function sendHeightToParent() {
-            setTimeout(() => {
-                const height = document.documentElement.scrollHeight;
-                // Debugging-Nachricht in der Browser-Konsole
-                console.log('Sending height to Wix:', height);
-                parent.postMessage({ type: 'setHeight', height: height }, '*');
-            }, 150); // Leicht erhöhte Verzögerung für mehr Stabilität
-        }
-
-        // Der Rest des JavaScripts ist identisch mit der vorherigen Version.
-        // Hier ist der komplette, lesbare Code zur Sicherheit:
+    // Stellt sicher, dass das Skript erst läuft, wenn das HTML komplett geladen ist.
+    document.addEventListener('DOMContentLoaded', () => {
+    
+        // === KONSTANTEN UND VARIABLEN ===
         const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbwJ2_Cv2NatRwqliQJ-NsLYBGTPFa4f_bpq4PNW-XHzvLqMl1BHjfqiztx8nMY7pYZqFQ/exec';
         const produkte = {
             "Müslibrötchen": 1.50, "Roggenkrüsti": 0.99, "Fitnessbrötchen": 1.15,
@@ -176,46 +197,89 @@
         };
         const aufpreisWoche = 1.70;
         const aufpreisWochenende = 2.20;
+
+        // DOM-Elemente
+        const formContainer = document.getElementById('form-container');
+        const successContainer = document.getElementById('success-container');
+        const loadingOverlay = document.getElementById('loading-overlay');
         const seite1 = document.getElementById('seite1');
         const seite2 = document.getElementById('seite2');
         const lieferbereich = document.getElementById('lieferbereich');
         const gesamtpreisAnzeige = document.getElementById('gesamtpreis');
+        
         let liefertagCounter = 0;
+
+        // === FUNKTIONEN ===
+
+        function sendHeightToParent() {
+            setTimeout(() => {
+                const height = document.documentElement.scrollHeight;
+                console.log('Sending height to Wix:', height); // Debugging
+                parent.postMessage({ type: 'setHeight', height: height }, '*');
+            }, 150);
+        }
+
         function wechsleSeite(zielSeite) {
             seite1.style.display = (zielSeite === 'seite1') ? 'block' : 'none';
             seite2.style.display = (zielSeite === 'seite2') ? 'block' : 'none';
+            
+            // Automatisch ersten Liefertag hinzufügen, wenn man auf Seite 2 kommt und noch keiner da ist
             if (zielSeite === 'seite2' && lieferbereich.childElementCount === 0) {
                 neuenLiefertagErstellen();
             }
             sendHeightToParent();
         }
+
         function neuenLiefertagErstellen() {
             liefertagCounter++;
             const tagContainer = document.createElement("div");
             tagContainer.className = "container delivery-day";
             tagContainer.dataset.id = liefertagCounter;
-            tagContainer.innerHTML = `<div class="delivery-day-header"><input type="date" required /><button class="remove-btn" data-action="remove-day"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></button></div><div class="sortenliste"></div><button class="btn btn-small" data-action="add-item">+ Sorte hinzufügen</button>`;
+            
+            tagContainer.innerHTML = `
+                <div class="delivery-day-header">
+                    <input type="date" required />
+                    <button class="remove-btn" data-action="remove-day" title="Diesen Liefertag entfernen">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                    </button>
+                </div>
+                <div class="sortenliste"></div>
+                <button class="btn btn-small" data-action="add-item">+ Sorte hinzufügen</button>`;
+            
             lieferbereich.appendChild(tagContainer);
+            neueSorteHinzufuegen(tagContainer.querySelector('[data-action="add-item"]')); // Direkt erste Sorte hinzufügen
             sendHeightToParent();
         }
+
         function neueSorteHinzufuegen(addButton) {
             const sortenliste = addButton.previousElementSibling;
             const row = document.createElement("div");
             row.className = "dynamic-row";
+            
             const datumsInput = addButton.closest('.delivery-day').querySelector('input[type=date]');
             const istWochenende = isWeekend(datumsInput.value);
+            
             let optionenHTML = '<option value="" disabled selected>Sorte wählen</option>';
             for (const [name, preis] of Object.entries(produkte)) {
                 if (istWochenende && name === "Müslibrötchen") continue;
                 optionenHTML += `<option value="${name}">${name}</option>`;
             }
-            row.innerHTML = `<select required>${optionenHTML}</select><input type="number" min="1" value="1" required /><button class="remove-btn" data-action="remove-item"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></button>`;
+            
+            row.innerHTML = `
+                <select required>${optionenHTML}</select>
+                <input type="number" min="1" value="1" required />
+                <button class="remove-btn" data-action="remove-item" title="Diese Sorte entfernen">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                </button>`;
+                
             sortenliste.appendChild(row);
             updateGesamtpreis();
         }
+
         function updateSortenOptionen(datumsInput) {
             const liefertag = datumsInput.closest('.delivery-day');
             const istWochenende = isWeekend(datumsInput.value);
+
             liefertag.querySelectorAll('.sortenliste select').forEach(select => {
                 const aktuellerWert = select.value;
                 if (istWochenende && aktuellerWert === "Müslibrötchen") {
@@ -227,20 +291,24 @@
             });
             updateGesamtpreis();
         }
+
         function updateGesamtpreis() {
             let gesamt = 0;
             document.querySelectorAll('.delivery-day').forEach(tag => {
                 const datumsInput = tag.querySelector('input[type=date]');
                 if (!datumsInput.value) return;
+
                 const istWochenende = isWeekend(datumsInput.value);
                 const aufpreis = istWochenende ? aufpreisWochenende : aufpreisWoche;
-                let summeProTag = 0; 
+                let summeProTag = 0;
+                
                 tag.querySelectorAll('.dynamic-row').forEach(row => {
                     const sorte = row.querySelector('select').value;
                     const menge = parseInt(row.querySelector('input[type=number]').value) || 0;
                     const preis = produkte[sorte] || 0;
                     summeProTag += preis * menge;
                 });
+
                 if (summeProTag > 0) {
                     gesamt += summeProTag + aufpreis;
                 }
@@ -248,26 +316,122 @@
             gesamtpreisAnzeige.textContent = gesamt.toFixed(2).replace('.', ',') + " €";
             sendHeightToParent();
         }
-        function isWeekend(dateString) { if (!dateString) return false; const date = new Date(dateString); const day = date.getDay(); return day === 6 || day === 0; }
-        async function submitForm() {
-            const nameInput = document.getElementById('name'); const emailInput = document.getElementById('email'); const wohnungInput = document.getElementById('wohnung');
-            if (!nameInput.value || !emailInput.value || !wohnungInput.value) { alert('Bitte füllen Sie alle allgemeinen Informationen (Name, E-Mail, Wohnung) aus.'); wechsleSeite('seite1'); nameInput.focus(); return; }
-            const orderData = { name: nameInput.value, email: emailInput.value, wohnung: wohnungInput.value, bestellungen: [], gesamtpreis: document.getElementById('gesamtpreis').textContent };
-            let hasValidDay = false;
-            document.querySelectorAll('.delivery-day').forEach(tag => { const datum = tag.querySelector('input[type=date]').value; if (!datum) return; const items = []; tag.querySelectorAll('.dynamic-row').forEach(row => { const sorte = row.querySelector('select').value; const menge = row.querySelector('input[type=number]').value; if (sorte && menge > 0) { items.push({ sorte, menge }); } }); if (items.length > 0) { hasValidDay = true; orderData.bestellungen.push({ datum, items }); } });
-            if (!hasValidDay) { alert('Bitte fügen Sie mindestens eine Brötchensorte für einen Liefertag hinzu.'); return; }
-            document.getElementById('loading-overlay').style.display = 'flex';
-            try { await fetch(googleAppScriptUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) }); document.getElementById('form-container').style.display = 'none'; document.getElementById('success-container').style.display = 'block'; } catch (error) { console.error('Fehler beim Senden:', error); alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.'); } finally { document.getElementById('loading-overlay').style.display = 'none'; sendHeightToParent(); }
+
+        function isWeekend(dateString) {
+            if (!dateString) return false;
+            const date = new Date(dateString);
+            const day = date.getDay(); // 0 = Sonntag, 6 = Samstag
+            return day === 6 || day === 0;
         }
+
+        async function submitForm() {
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const wohnungInput = document.getElementById('wohnung');
+
+            if (!nameInput.value || !emailInput.value || !wohnungInput.value) {
+                alert('Bitte füllen Sie alle allgemeinen Informationen (Name, E-Mail, Wohnung) aus.');
+                wechsleSeite('seite1');
+                nameInput.focus();
+                return;
+            }
+
+            const orderData = {
+                name: nameInput.value,
+                email: emailInput.value,
+                wohnung: wohnungInput.value,
+                bestellungen: [],
+                gesamtpreis: document.getElementById('gesamtpreis').textContent
+            };
+
+            let hasValidDay = false;
+            document.querySelectorAll('.delivery-day').forEach(tag => {
+                const datum = tag.querySelector('input[type=date]').value;
+                if (!datum) return;
+                
+                const items = [];
+                tag.querySelectorAll('.dynamic-row').forEach(row => {
+                    const sorte = row.querySelector('select').value;
+                    const menge = row.querySelector('input[type=number]').value;
+                    if (sorte && menge > 0) {
+                        items.push({ sorte, menge });
+                    }
+                });
+
+                if (items.length > 0) {
+                    hasValidDay = true;
+                    orderData.bestellungen.push({ datum, items });
+                }
+            });
+
+            if (!hasValidDay) {
+                alert('Bitte fügen Sie mindestens eine Brötchensorte für einen Liefertag hinzu.');
+                return;
+            }
+
+            loadingOverlay.style.display = 'flex';
+            
+            try {
+                // HINWEIS: 'no-cors' verhindert, dass man eine direkte Antwort vom Skript erhält.
+                // Das ist normal, wenn man von einem Browser direkt an ein Google App Script sendet.
+                // Das Skript wird trotzdem ausgeführt.
+                await fetch(googleAppScriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                
+                formContainer.style.display = 'none';
+                successContainer.style.display = 'block';
+
+            } catch (error) {
+                console.error('Fehler beim Senden:', error);
+                alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut oder kontaktieren Sie uns direkt.');
+            } finally {
+                loadingOverlay.style.display = 'none';
+                sendHeightToParent();
+            }
+        }
+
+        // === EVENT LISTENERS ===
         document.getElementById('btn-to-page2').addEventListener('click', () => wechsleSeite('seite2'));
         document.getElementById('btn-to-page1').addEventListener('click', () => wechsleSeite('seite1'));
         document.getElementById('btn-add-day').addEventListener('click', neuenLiefertagErstellen);
         document.getElementById('btn-submit').addEventListener('click', submitForm);
-        document.body.addEventListener('click', function(e) { if (e.target.dataset.action === 'add-item') { neueSorteHinzufuegen(e.target); } if (e.target.closest('[data-action="remove-item"]')) { e.target.closest('.dynamic-row').remove(); updateGesamtpreis(); } if (e.target.closest('[data-action="remove-day"]')) { e.target.closest('.delivery-day').remove(); updateGesamtpreis(); } });
-        document.body.addEventListener('change', function(e) { if (e.target.matches('input[type=number], select, input[type=date]')) { if (e.target.matches('input[type=date]')) { updateSortenOptionen(e.target); } updateGesamtpreis(); } });
+
+        document.body.addEventListener('click', function(e) {
+            const button = e.target.closest('button');
+            if (!button) return;
+
+            const action = button.dataset.action;
+            if (action === 'add-item') {
+                neueSorteHinzufuegen(button);
+            } else if (action === 'remove-item') {
+                button.closest('.dynamic-row').remove();
+                updateGesamtpreis();
+            } else if (action === 'remove-day') {
+                button.closest('.delivery-day').remove();
+                updateGesamtpreis();
+            }
+        });
+
+        document.body.addEventListener('change', function(e) {
+            const target = e.target;
+            if (target.matches('input[type=number], select, input[type=date]')) {
+                if (target.matches('input[type=date]')) {
+                    updateSortenOptionen(target);
+                }
+                updateGesamtpreis();
+            }
+        });
+
+        // Höhe an Wix senden
         window.addEventListener('load', sendHeightToParent);
         window.addEventListener('resize', sendHeightToParent);
-        new MutationObserver(sendHeightToParent).observe(document.body, { childList: true, subtree: true, attributes: true });
+        new MutationObserver(sendHeightToParent).observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
+
+    });
     </script>
 </body>
 </html>
