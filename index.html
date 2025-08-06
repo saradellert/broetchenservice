@@ -1,143 +1,174 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Brötchen-Bestellung</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
   <style>
     body {
+      font-family: 'Inter', sans-serif;
       background-color: #DFDCD7;
-      font-family: sans-serif;
-      color: #292826;
       margin: 0;
       padding: 0;
+      color: #292826;
     }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      padding: 2rem;
-    }
+
     h1 {
       text-align: center;
-      font-size: 1.8rem;
+      padding: 1.5rem;
     }
-    h2 {
-      font-size: 1.3rem;
-      margin-top: 2rem;
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
     }
+
     label {
       display: block;
-      margin-bottom: 0.5rem;
-      font-weight: bold;
+      margin: 0.8rem 0 0.2rem;
+      font-weight: 500;
     }
-    input, select, button {
+
+    input, select {
       width: 100%;
       padding: 0.6rem;
-      margin-bottom: 1rem;
       border: 1px solid #ccc;
-      border-radius: 10px;
-      font-size: 1rem;
+      border-radius: 0.5rem;
+      font-family: 'Inter', sans-serif;
     }
-    .hidden { display: none; }
-    .step {
-      display: none;
-      transition: all 0.3s ease;
-    }
-    .step.active {
-      display: block;
-    }
+
     .btn {
       background-color: #292826;
       color: white;
+      padding: 0.8rem 1.2rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    .btn-small {
+      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .sorten-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+
+    .sorten-row select, .sorten-row input {
+      flex: 1;
+    }
+
+    .remove-btn {
+      background: none;
       border: none;
       cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .btn-row {
+
+    .remove-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: #292826;
+    }
+
+    #seite2 {
+      display: none;
+    }
+
+    .price-box {
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.3rem;
+      margin: 1rem 0;
+    }
+
+    .navi {
       display: flex;
       justify-content: space-between;
       gap: 1rem;
     }
-    .delivery-day {
-      border: 1px solid #ccc;
-      padding: 1rem;
-      border-radius: 10px;
-      margin-bottom: 1rem;
-      background: white;
-    }
-    .item-row {
+
+    .add-btn-row {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
-    .quantity-control {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-    .quantity-control button {
-      width: 2rem;
-      height: 2rem;
-      font-size: 1rem;
-      border: none;
-      background: #292826;
-      color: white;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-    .delete-btn {
-      background: none;
-      border: none;
-      color: #a00;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-    #total {
-      font-weight: bold;
-      text-align: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
       margin-top: 1rem;
+    }
+
+    .section-heading {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Brötchen-Bestellung</h1>
-    <p style="text-align:center">Bestellen Sie frische Brötchen für Ihre Ferienwohnung</p>
+  <h1>Brötchen-Bestellung</h1>
 
-    <div id="step1" class="step active">
-      <label for="name">Name *</label>
-      <input type="text" id="name" required>
+  <!-- Seite 1: Allgemeine Informationen -->
+  <div class="container" id="seite1">
+    <div class="section-heading">Allgemeine Informationen</div>
+    <label for="name">Name *</label>
+    <input type="text" id="name" required />
 
-      <label for="email">Email *</label>
-      <input type="email" id="email" required>
+    <label for="email">Email *</label>
+    <input type="email" id="email" required />
 
-      <label for="wohnung">Ferienwohnung *</label>
-      <select id="wohnung" required>
-        <option value="">Wählen Sie Ihre Ferienwohnung</option>
-        <option value="La Maison">La Maison</option>
-        <option value="Suite Maritim">Suite Maritim</option>
-        <option value="Maisonette Beach">Maisonette Beach</option>
-      </select>
+    <label for="wohnung">Ferienwohnung *</label>
+    <select id="wohnung" required>
+      <option value="">Wählen Sie Ihre Ferienwohnung</option>
+      <option>La Maison</option>
+      <option>Suite Maritim</option>
+      <option>Maisonette Beach</option>
+    </select>
 
-      <button class="btn" onclick="nextStep()">Nächste Seite</button>
+    <button class="btn" onclick="zeigeSeite2()">Weiter zur Bestellung</button>
+  </div>
+
+  <!-- Seite 2: Bestellung -->
+  <div class="container" id="seite2">
+    <div class="section-heading">Ihre Bestellung</div>
+    <div id="lieferbereich"></div>
+
+    <div class="add-btn-row">
+      <button class="btn btn-small" onclick="neuenLiefertag()">+ Weiteren Liefertag hinzufügen</button>
     </div>
 
-    <div id="step2" class="step">
-      <div id="lieferTage"></div>
+    <div class="price-box">Gesamtpreis: <span id="gesamtpreis">0,00€</span></div>
 
-      <button class="btn" onclick="addLieferTag()">+ Weiteren Liefertag hinzufügen</button>
-
-      <p id="total">Gesamtpreis: 0,00€</p>
-
-      <div class="btn-row">
-        <button class="btn" onclick="prevStep()">Zurück</button>
-        <button class="btn" onclick="submitOrder()">Bestellung absenden</button>
-      </div>
+    <div class="navi">
+      <button class="btn btn-small" onclick="zeigeSeite1()">Zurück</button>
+      <button class="btn btn-small">Bestellung absenden</button>
     </div>
   </div>
 
   <script>
-    const broetchenPreise = {
+    const broetchen = {
       "Müslibrötchen": 1.50,
       "Roggenkrüsti": 0.99,
       "Fitnessbrötchen": 1.15,
@@ -173,122 +204,117 @@
       "Pottstuten": 4.50
     };
 
-    function nextStep() {
-      document.getElementById('step1').classList.remove('active');
-      document.getElementById('step2').classList.add('active');
-      if (!document.querySelector('.delivery-day')) addLieferTag();
+    // Aufpreise editierbar
+    const aufpreisWoche = 1.70;
+    const aufpreisWochenende = 2.20;
+
+    const lieferbereich = document.getElementById("lieferbereich");
+    let liefertagId = 0;
+
+    // Seite 1 → Seite 2
+    function zeigeSeite2() {
+      document.getElementById("seite1").style.display = "none";
+      document.getElementById("seite2").style.display = "block";
+      if (lieferbereich.childElementCount === 0) neuenLiefertag();
+      updatePreis();
     }
 
-    function prevStep() {
-      document.getElementById('step2').classList.remove('active');
-      document.getElementById('step1').classList.add('active');
+    // Seite 2 → Seite 1
+    function zeigeSeite1() {
+      document.getElementById("seite2").style.display = "none";
+      document.getElementById("seite1").style.display = "block";
     }
 
-    function addLieferTag() {
-      const container = document.createElement('div');
-      container.className = 'delivery-day';
+    // Liefertag hinzufügen
+    function neuenLiefertag() {
+      liefertagId++;
+      const tag = document.createElement("div");
+      tag.className = "container";
+      tag.dataset.id = liefertagId;
 
-      const dateInput = document.createElement('input');
-      dateInput.type = 'date';
-      dateInput.required = true;
-      container.appendChild(dateInput);
+      tag.innerHTML = `
+        <label>Datum *</label>
+        <input type="date" required onchange="updateSorten(${liefertagId}); updatePreis()" />
+        <div class="sortenliste"></div>
+        <button class="btn btn-small" onclick="neueSorte(this)">+ Brötchensorte hinzufügen</button>
+        <div style="text-align: right; margin-top: 1rem;">
+          <button class="remove-btn" onclick="this.closest('.container').remove(); updatePreis()">
+            <svg viewBox="0 0 24 24"><path d="M9 3v1H4v2h16V4h-5V3H9zm1 5v10h2V8h-2zm4 0v10h2V8h-2zm-8 0v10h2V8H6z"/></svg>
+          </button>
+        </div>
+      `;
+      lieferbereich.appendChild(tag);
+      updateSorten(liefertagId);
+    }
 
-      const itemList = document.createElement('div');
-      container.appendChild(itemList);
+    // Brötchensorte hinzufügen
+    function neueSorte(button) {
+      const container = button.previousElementSibling;
+      const row = document.createElement("div");
+      row.className = "sorten-row";
 
-      function addItem() {
-        const row = document.createElement('div');
-        row.className = 'item-row';
+      const select = document.createElement("select");
+      const datum = button.closest(".container").querySelector("input[type=date]").value;
+      const istWochenende = new Date(datum).getDay() === 6 || new Date(datum).getDay() === 0;
 
-        const select = document.createElement('select');
-        for (let broetchen in broetchenPreise) {
-          const option = document.createElement('option');
-          option.value = broetchen;
-          option.text = `${broetchen} (${broetchenPreise[broetchen].toFixed(2)}€)`;
-          select.appendChild(option);
-        }
-        row.appendChild(select);
-
-        const quantity = document.createElement('input');
-        quantity.type = 'number';
-        quantity.min = 1;
-        quantity.value = 1;
-        quantity.style.width = '4rem';
-        row.appendChild(quantity);
-
-        const delBtn = document.createElement('button');
-        delBtn.className = 'delete-btn';
-        delBtn.innerText = '🗑️';
-        delBtn.onclick = () => {
-          row.remove();
-          calcTotal();
-        };
-        row.appendChild(delBtn);
-
-        select.onchange = calcTotal;
-        quantity.oninput = calcTotal;
-
-        itemList.appendChild(row);
-        calcTotal();
+      for (const [sorte, preis] of Object.entries(broetchen)) {
+        if (istWochenende && sorte === "Müslibrötchen") continue;
+        const opt = document.createElement("option");
+        opt.value = sorte;
+        opt.textContent = sorte;
+        select.appendChild(opt);
       }
 
-      const addBtn = document.createElement('button');
-      addBtn.className = 'btn';
-      addBtn.textContent = '+ Brötchensorte hinzufügen';
-      addBtn.onclick = (e) => {
-        e.preventDefault();
-        addItem();
-      };
-      container.appendChild(addBtn);
+      const input = document.createElement("input");
+      input.type = "number";
+      input.min = 1;
+      input.value = 1;
+      input.onchange = updatePreis;
 
-      const delDay = document.createElement('button');
-      delDay.className = 'delete-btn';
-      delDay.innerText = '🗑️';
-      delDay.onclick = () => {
-        container.remove();
-        calcTotal();
-      };
-      container.appendChild(delDay);
+      const remove = document.createElement("button");
+      remove.className = "remove-btn";
+      remove.onclick = () => { row.remove(); updatePreis(); };
+      remove.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 3v1H4v2h16V4h-5V3H9zm1 5v10h2V8h-2zm4 0v10h2V8h-2zm-8 0v10h2V8H6z"/></svg>`;
 
-      document.getElementById('lieferTage').appendChild(container);
-
-      dateInput.onchange = () => {
-        const selected = new Date(dateInput.value);
-        const weekend = [0, 6].includes(selected.getDay());
-        const selects = container.querySelectorAll('select');
-        selects.forEach(s => {
-          if (s.value === 'Müslibrötchen') s.value = '';
-          s.querySelectorAll('option').forEach(opt => {
-            if (opt.value === 'Müslibrötchen') opt.disabled = weekend;
-          });
-        });
-        calcTotal();
-      };
-
-      addItem();
+      row.appendChild(select);
+      row.appendChild(input);
+      row.appendChild(remove);
+      container.appendChild(row);
+      updatePreis();
     }
 
-    function calcTotal() {
-      let sum = 0;
-      const days = document.querySelectorAll('.delivery-day');
-      days.forEach(day => {
-        const date = new Date(day.querySelector('input[type="date"]').value);
-        const weekend = [0, 6].includes(date.getDay());
-        const items = day.querySelectorAll('.item-row');
-        let tagSum = 0;
-        items.forEach(item => {
-          const sorte = item.querySelector('select').value;
-          const menge = parseInt(item.querySelector('input').value);
-          if (broetchenPreise[sorte]) tagSum += broetchenPreise[sorte] * menge;
-        });
-        if (weekend) tagSum += 1.70;
-        sum += tagSum;
-      });
-      document.getElementById('total').innerText = `Gesamtpreis: ${sum.toFixed(2)}€`;
+    // Sortenliste aktualisieren bei Datumsauswahl
+    function updateSorten(id) {
+      const tag = [...lieferbereich.children].find(e => e.dataset.id == id);
+      const datum = tag.querySelector("input[type=date]").value;
+      const istWochenende = new Date(datum).getDay() === 6 || new Date(datum).getDay() === 0;
+      const sorten = tag.querySelector(".sortenliste");
+      sorten.innerHTML = "";
     }
 
-    function submitOrder() {
-      alert("Diese Funktion wird noch angebunden. Deine Daten bleiben lokal gespeichert.");
+    // Preis aktualisieren
+    function updatePreis() {
+      let gesamt = 0;
+
+      for (const tag of lieferbereich.children) {
+        const datum = tag.querySelector("input[type=date]").value;
+        if (!datum) continue;
+
+        const istWochenende = new Date(datum).getDay() === 6 || new Date(datum).getDay() === 0;
+        const aufpreis = istWochenende ? aufpreisWochenende : aufpreisWoche;
+
+        let summe = 0;
+        const rows = tag.querySelectorAll(".sortenliste .sorten-row");
+        for (const row of rows) {
+          const sorte = row.querySelector("select").value;
+          const menge = parseInt(row.querySelector("input").value) || 0;
+          const preis = broetchen[sorte] || 0;
+          summe += preis * menge;
+        }
+        gesamt += summe + aufpreis;
+      }
+
+      document.getElementById("gesamtpreis").textContent = gesamt.toFixed(2).replace(".", ",") + "€";
     }
   </script>
 </body>
