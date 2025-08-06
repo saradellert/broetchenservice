@@ -1,105 +1,80 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="de">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Brötchenservice</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+    }
+    .liefertag {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+    .brotchen-block {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    button {
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="de"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Brötchenbestellung&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 2em; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>h2 { margin-top: 2em; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.sorte, .liefertag { border: 1px solid #ccc; padding: 1em; margin-top: 1em; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>label { display: block; margin-top: 0.5em; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>button { margin-top: 1em; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;h1&gt;Brötchenbestellung&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;form action="https://formsubmit.co/DEINE_EMAIL@domain.com" method="POST"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="liefertage"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="liefertag"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label&gt;Liefertag: &lt;input type="date" name="liefertag[]"&gt;&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sorten"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="sorte"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;label&gt;Brötchensorte:</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;select name="sorte[]"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Müslibrötchen (1,50€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Roggenkrüsti (0,99€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Fitnessbrötchen (1,15€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Kürbiskernbrötchen (1,20€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Dinkelbrötchen (1,20€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Schnittbrötchen (0,60€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Kraftkörnchen (1,15€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Mohnbrötchen (0,85€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Sesambrötchen (0,85€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Morgengoldbrötchen (0,95€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Kartoffelbrötchen (1,05€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Kürbiskäsebrötchen (1,60€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Käsebrötchen (1,55€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Milchbrötchen (1,00€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Rosinenbrötchen (1,10€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Buttercroissant (1,85€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Croissant (1,85€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Schokoladencroissant (2,10€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Laugenstange (1,60€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Laugenbrötchen (1,20€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Rosinenschnecke (2,45€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Donut (1,85€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Berliner (1,80€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Mandelhörnchen (2,80€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;großes Kassler (4,55€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Kraftkornbrot (4,85€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Münsterländer (4,50€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Fitnessbrot (4,85€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Dinkelbrot (4,55€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Steinofenbrot (4,55€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Holzhacker (4,85€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Hamburger Brot (3,70€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Pottstuten (4,50€)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;label&gt;Menge: &lt;input type="number" name="menge[]" min="0"&gt;&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button type="button" onclick="addSorte(this)"&gt;➕ Weitere Sorte hinzufügen&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button type="button" onclick="addLiefertag()"&gt;➕ Neuen Liefertag hinzufügen&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;br&gt;&lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button type="submit"&gt;Absenden&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/form&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>function addSorte(btn) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const sortenDiv = btn.previousElementSibling;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const neueSorte = sortenDiv.firstElementChild.cloneNode(true);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>neueSorte.querySelectorAll('input').forEach(input =&gt; input.value = '');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>sortenDiv.appendChild(neueSorte);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>function addLiefertag() {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const liefertage = document.getElementById('liefertage');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const erster = liefertage.firstElementChild;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const neuerTag = erster.cloneNode(true);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>neuerTag.querySelectorAll('input').forEach(input =&gt; input.value = '');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>liefertage.appendChild(neuerTag);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+  <h1>Brötchenservice</h1>
+  <form id="brotchenForm">
+    <div id="liefertageContainer"></div>
+    <button type="button" onclick="neuerLiefertag()">➕ Neuer Liefertag</button>
+    <br><br>
+    <button type="submit">Abschicken</button>
+  </form>
+
+  <script>
+    let liefertagIndex = 0;
+
+    function neuerLiefertag() {
+      const container = document.getElementById('liefertageContainer');
+      const tagDiv = document.createElement('div');
+      tagDiv.className = 'liefertag';
+      tagDiv.id = `liefertag-${liefertagIndex}`;
+
+      tagDiv.innerHTML = `
+        <h3>Liefertag</h3>
+        <label>Datum: <input type="date" name="datum-${liefertagIndex}"></label>
+        <div id="sorten-${liefertagIndex}">
+        </div>
+        <button type="button" onclick="neueSorte(${liefertagIndex})">➕ Weitere Sorte hinzufügen</button>
+      `;
+      container.appendChild(tagDiv);
+      neueSorte(liefertagIndex);
+      liefertagIndex++;
+    }
+
+    function neueSorte(index) {
+      const sortenContainer = document.getElementById(`sorten-${index}`);
+      const div = document.createElement('div');
+      div.className = 'brotchen-block';
+      div.innerHTML = `
+        <input type="text" name="sorte-${index}[]" placeholder="Brötchensorte" />
+        <input type="number" name="menge-${index}[]" placeholder="Anzahl" min="1" />
+      `;
+      sortenContainer.appendChild(div);
+    }
+
+    document.getElementById('brotchenForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert("Formular abgesendet! Verbindung zu Google Sheets folgt per Script.");
+    });
+
+    // Standard: 1 Liefertag vorfüllen
+    neuerLiefertag();
+  </script>
 </body>
 </html>
