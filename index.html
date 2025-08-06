@@ -8,25 +8,23 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Modernes und sauberes Design für das Bestellformular */
         :root {
-            --primary-bg: #F4F4F2; /* Heller, warmer Hintergrund */
-            --container-bg: #FFFFFF; /* Weißer Container */
-            --text-color: #333333; /* Dunkler Text für Lesbarkeit */
-            --primary-color: #3A4F41; /* Ein ruhiger Grünton für Buttons */
-            --border-color: #D1D1D1; /* Dezente Rahmenfarbe */
-            --shadow-color: rgba(0, 0, 0, 0.08); /* Weicher Schatten */
-            --danger-color: #D9534F; /* Farbe für Entfernen-Buttons */
+            --primary-bg: #F4F4F2;
+            --container-bg: #FFFFFF;
+            --text-color: #333333;
+            /* === NEUE BUTTON-FARBE === */
+            --primary-color: #2F2F2F; /* Dunkles Anthrazit */
+            --border-color: #D1D1D1;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --danger-color: #D9534F;
         }
-
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--primary-bg);
             margin: 0;
-            padding: 2rem 1rem;
+            padding: 1rem;
             color: var(--text-color);
         }
-
         .container {
             max-width: 700px;
             margin: 0 auto 2rem auto;
@@ -36,29 +34,17 @@
             box-shadow: 0 5px 25px var(--shadow-color);
             border: 1px solid var(--border-color);
         }
-
-        h1, .section-heading {
-            text-align: center;
-            font-weight: 700;
-        }
-
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 2rem;
-        }
-
         .section-heading {
+            text-align: center;
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
             font-weight: 600;
         }
-
         label {
             display: block;
             margin: 1rem 0 0.5rem;
             font-weight: 500;
         }
-
         input, select {
             width: 100%;
             padding: 0.8rem;
@@ -66,9 +52,8 @@
             border-radius: 8px;
             font-family: 'Inter', sans-serif;
             font-size: 1rem;
-            box-sizing: border-box; /* Wichtig für korrektes Padding */
+            box-sizing: border-box;
         }
-
         .btn {
             background-color: var(--primary-color);
             color: white;
@@ -81,155 +66,90 @@
             margin-top: 1.5rem;
             transition: background-color 0.2s ease;
         }
-
         .btn:hover {
-            background-color: #2E3E34;
+             /* Etwas dunkler beim Hovern */
+            background-color: #1a1a1a;
         }
+        .btn-small { font-size: 0.9rem; padding: 0.6rem 1rem; margin-top: 1rem; }
 
-        .btn-small {
-            font-size: 0.9rem;
-            padding: 0.6rem 1rem;
-            margin-top: 1rem;
-        }
-        
-        /* Layout für dynamische Reihen */
         .dynamic-row {
             display: grid;
-            grid-template-columns: 1fr 1fr auto; /* Sorte | Menge | Button */
+            grid-template-columns: 1fr 80px auto;
             gap: 0.75rem;
             align-items: center;
             margin-top: 0.75rem;
         }
 
-        /* Styling für den Entfernen-Button */
         .remove-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background-color 0.2s ease;
+            background: none; border: none; cursor: pointer; padding: 0.5rem;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; transition: background-color 0.2s ease;
         }
-
-        .remove-btn:hover {
-            background-color: #FEEBEA;
-        }
-
-        .remove-btn svg {
-            width: 20px;
-            height: 20px;
-            stroke: var(--danger-color);
-            stroke-width: 2;
-        }
+        .remove-btn:hover { background-color: #FEEBEA; }
+        .remove-btn svg { width: 20px; height: 20px; stroke: var(--danger-color); stroke-width: 2; }
         
         .delivery-day-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem;
         }
-        
-        .delivery-day-header input[type="date"] {
-             width: auto;
-        }
+        .delivery-day-header input[type="date"] { width: auto; }
 
-        #seite2, #loading-overlay {
-            display: none; /* Standardmäßig ausgeblendet */
-        }
+        #seite2, #loading-overlay { display: none; }
         
-        /* Lade-Animation für den Submit */
         #loading-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(255, 255, 255, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+            flex-direction: column; z-index: 1000;
         }
-
         .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--primary-color);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
+            border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color);
+            border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;
         }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         #success-message {
-            text-align: center;
-            padding: 2rem;
-            color: var(--primary-color);
-            font-size: 1.2rem;
+            text-align: center; padding: 2rem; color: var(--text-color);
+            font-size: 1.2rem; line-height: 1.6;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .price-box {
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.5rem;
-            margin: 2rem 0;
-            color: var(--primary-color);
+            text-align: center; font-weight: bold; font-size: 1.5rem;
+            margin: 2rem 0; color: var(--primary-color);
         }
-
-        .navi {
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-        }
+        .navi { display: flex; justify-content: space-between; gap: 1rem; }
     </style>
 </head>
 <body>
-
     <div id="form-container">
         <div class="container" id="seite1">
-            <div class="section-heading">Allgemeine Informationen</div>
-            
-            <label for="name">Name *</label>
-            <input type="text" id="name" required />
-
-            <label for="email">E-Mail *</label>
-            <input type="email" id="email" required />
-
-            <label for="wohnung">Ferienwohnung *</label>
-            <select id="wohnung" required>
-                <option value="" disabled selected>Bitte wählen...</option>
-                <option>La Maison</option>
-                <option>Suite Maritim</option>
-                <option>Maisonette Beach</option>
-                <option>Cottage & Garden</option>
-                <option>Malibu L</option>
-                <option>Malibu S</option>
-            </select>
-
-            <button class="btn" id="btn-to-page2">Weiter zur Bestellung</button>
+             <div class="section-heading">Allgemeine Informationen</div>
+             <label for="name">Name *</label>
+             <input type="text" id="name" required />
+             <label for="email">E-Mail *</label>
+             <input type="email" id="email" required />
+             <label for="wohnung">Ferienwohnung *</label>
+             <select id="wohnung" required>
+                 <option value="" disabled selected>Bitte wählen...</option>
+                 <option>La Maison</option>
+                 <option>Suite Maritim</option>
+                 <option>Maisonette Beach</option>
+                 <option>Cottage & Garden</option>
+                 <option>Malibu L</option>
+                 <option>Malibu S</option>
+             </select>
+             <button class="btn" id="btn-to-page2">Weiter zur Bestellung</button>
         </div>
-
         <div class="container" id="seite2">
-            <div class="section-heading">Ihre Bestellung</div>
-            <div id="lieferbereich"></div>
-
-            <div style="text-align: center;">
-                <button class="btn btn-small" id="btn-add-day">+ Weiteren Liefertag hinzufügen</button>
-            </div>
-
-            <div class="price-box">Gesamtpreis: <span id="gesamtpreis">0,00 €</span></div>
-
-            <div class="navi">
-                <button class="btn btn-small" id="btn-to-page1">Zurück</button>
-                <button class="btn" id="btn-submit">Bestellung absenden</button>
-            </div>
+             <div class="section-heading">Ihre Bestellung</div>
+             <div id="lieferbereich"></div>
+             <div style="text-align: center;">
+                 <button class="btn btn-small" id="btn-add-day">+ Weiteren Liefertag hinzufügen</button>
+             </div>
+             <div class="price-box">Gesamtpreis: <span id="gesamtpreis">0,00 €</span></div>
+             <div class="navi">
+                 <button class="btn btn-small" id="btn-to-page1">Zurück</button>
+                 <button class="btn" id="btn-submit">Bestellung absenden</button>
+             </div>
         </div>
     </div>
     
@@ -240,20 +160,18 @@
     
     <div id="success-container" class="container" style="display: none;">
         <div id="success-message">
-           Vielen Dank! Deine Bestellung wurde erfolgreich übermittelt. Du erhältst in Kürze eine Bestätigung per E-Mail.
+           Vielen Dank für Ihre Bestellung! Sie erhalten in Kürze eine Bestätigungs-E-Mail mit den Zahlungsinformationen.
         </div>
     </div>
-
 
     <script>
         // #####################################################################
         // ### KONFIGURATION & DATEN ###
         // #####################################################################
         
-        // Trage hier die URL deines Google Apps Script Web App ein, nachdem du es bereitgestellt hast.
+        // Trage hier die URL deines Google Apps Script Web App ein.
         const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbwJ2_Cv2NatRwqliQJ-NsLYBGTPFa4f_bpq4PNW-XHzvLqMl1BHjfqiztx8nMY7pYZqFQ/exec';
 
-        // Preise für alle verfügbaren Produkte
         const produkte = {
             "Müslibrötchen": 1.50, "Roggenkrüsti": 0.99, "Fitnessbrötchen": 1.15,
             "Kürbiskernbrötchen": 1.20, "Dinkelbrötchen": 1.20, "Schnittbrötchen": 0.60,
@@ -268,7 +186,6 @@
             "Holzhacker": 4.85, "Hamburger Brot": 3.70, "Pottstuten": 4.50
         };
 
-        // Lieferaufpreise
         const aufpreisWoche = 1.70;
         const aufpreisWochenende = 2.20;
 
@@ -280,37 +197,26 @@
         const seite2 = document.getElementById('seite2');
         const lieferbereich = document.getElementById('lieferbereich');
         const gesamtpreisAnzeige = document.getElementById('gesamtpreis');
-        let liefertagCounter = 0; // Zählt die Liefertage für eindeutige IDs
+        let liefertagCounter = 0;
 
         // #####################################################################
         // ### FUNKTIONEN ###
         // #####################################################################
 
-        /**
-         * Wechselt die Ansicht zwischen den Formularseiten.
-         * @param {string} zielSeite - Die ID der anzuzeigenden Seite ('seite1' oder 'seite2').
-         */
         function wechsleSeite(zielSeite) {
             seite1.style.display = (zielSeite === 'seite1') ? 'block' : 'none';
             seite2.style.display = (zielSeite === 'seite2') ? 'block' : 'none';
-
-            // Wenn zu Seite 2 gewechselt wird und noch kein Liefertag existiert, einen erstellen.
             if (zielSeite === 'seite2' && lieferbereich.childElementCount === 0) {
                 neuenLiefertagErstellen();
             }
             updateGesamtpreis();
         }
 
-        /**
-         * Erstellt einen neuen Block für einen Liefertag im Formular.
-         */
         function neuenLiefertagErstellen() {
             liefertagCounter++;
             const tagContainer = document.createElement("div");
             tagContainer.className = "container delivery-day";
             tagContainer.dataset.id = liefertagCounter;
-
-            // HTML-Struktur für einen Liefertag
             tagContainer.innerHTML = `
                 <div class="delivery-day-header">
                     <input type="date" required />
@@ -327,25 +233,17 @@
             updateGesamtpreis();
         }
 
-        /**
-         * Fügt eine neue Zeile für eine Brötchensorte zu einem Liefertag hinzu.
-         * @param {HTMLElement} addButton - Der Button, der geklickt wurde.
-         */
         function neueSorteHinzufuegen(addButton) {
             const sortenliste = addButton.previousElementSibling;
             const row = document.createElement("div");
             row.className = "dynamic-row";
-
-            // Optionen für das Dropdown-Menü erstellen
             const datumsInput = addButton.closest('.delivery-day').querySelector('input[type=date]');
             const istWochenende = isWeekend(datumsInput.value);
             let optionenHTML = '<option value="" disabled selected>Sorte wählen</option>';
             for (const [name, preis] of Object.entries(produkte)) {
-                // Müslibrötchen am Wochenende ausschließen
                 if (istWochenende && name === "Müslibrötchen") continue;
                 optionenHTML += `<option value="${name}">${name}</option>`;
             }
-
             row.innerHTML = `
                 <select required>${optionenHTML}</select>
                 <input type="number" min="1" value="1" required />
@@ -359,21 +257,14 @@
             updateGesamtpreis();
         }
 
-        /**
-         * Aktualisiert die Dropdown-Optionen, wenn sich das Datum ändert.
-         * @param {HTMLElement} datumsInput - Das geänderte Datumseingabefeld.
-         */
         function updateSortenOptionen(datumsInput) {
             const liefertag = datumsInput.closest('.delivery-day');
             const istWochenende = isWeekend(datumsInput.value);
-            
             liefertag.querySelectorAll('.sortenliste select').forEach(select => {
                 const aktuellerWert = select.value;
                 if (istWochenende && aktuellerWert === "Müslibrötchen") {
-                    // Wenn Datum auf Wochenende geändert wird und Müslibrötchen ausgewählt war, Zeile entfernen
                     select.closest('.dynamic-row').remove();
                 } else {
-                    // Update der Optionen in allen Selects dieses Liefertages
                     const muesliOption = select.querySelector('option[value="Müslibrötchen"]');
                     if (muesliOption) muesliOption.hidden = istWochenende;
                 }
@@ -381,41 +272,28 @@
             updateGesamtpreis();
         }
 
-        /**
-         * Berechnet und aktualisiert den Gesamtpreis der Bestellung.
-         */
         function updateGesamtpreis() {
             let gesamt = 0;
             document.querySelectorAll('.delivery-day').forEach(tag => {
                 const datumsInput = tag.querySelector('input[type=date]');
                 if (!datumsInput.value) return;
-
                 const istWochenende = isWeekend(datumsInput.value);
                 const aufpreis = istWochenende ? aufpreisWochenende : aufpreisWoche;
-                let summeProTag = aufpreis; // Aufpreis immer dazurechnen
-
+                let summeProTag = 0; 
                 tag.querySelectorAll('.dynamic-row').forEach(row => {
                     const sorte = row.querySelector('select').value;
                     const menge = parseInt(row.querySelector('input[type=number]').value) || 0;
                     const preis = produkte[sorte] || 0;
                     summeProTag += preis * menge;
                 });
-                
-                // Nur Tage zum Gesamtpreis addieren, die mindestens eine Sorte haben
-                if (tag.querySelectorAll('.dynamic-row').length > 0) {
-                    gesamt += summeProTag;
+                if (summeProTag > 0) {
+                    gesamt += summeProTag + aufpreis;
                 }
             });
-
             gesamtpreisAnzeige.textContent = gesamt.toFixed(2).replace('.', ',') + " €";
-            sendHeightToParent(); // Höhe nach jeder Preisaktualisierung an Wix senden
+            sendHeightToParent();
         }
         
-        /**
-         * Prüft, ob ein Datum ein Samstag (6) oder Sonntag (0) ist.
-         * @param {string} dateString - Das Datum im Format YYYY-MM-DD.
-         * @returns {boolean}
-         */
         function isWeekend(dateString) {
             if (!dateString) return false;
             const date = new Date(dateString);
@@ -423,23 +301,16 @@
             return day === 6 || day === 0;
         }
 
-        /**
-         * Sammelt alle Formulardaten, validiert sie und sendet sie an das Google Apps Script.
-         */
         async function submitForm() {
-            // 1. Validierung
             const nameInput = document.getElementById('name');
             const emailInput = document.getElementById('email');
             const wohnungInput = document.getElementById('wohnung');
-            
             if (!nameInput.value || !emailInput.value || !wohnungInput.value) {
                 alert('Bitte füllen Sie alle allgemeinen Informationen (Name, E-Mail, Wohnung) aus.');
                 wechsleSeite('seite1');
                 nameInput.focus();
                 return;
             }
-
-            // 2. Daten sammeln
             const orderData = {
                 name: nameInput.value,
                 email: emailInput.value,
@@ -447,12 +318,10 @@
                 bestellungen: [],
                 gesamtpreis: document.getElementById('gesamtpreis').textContent
             };
-
             let hasValidDay = false;
             document.querySelectorAll('.delivery-day').forEach(tag => {
                 const datum = tag.querySelector('input[type=date]').value;
-                if (!datum) return; // Tage ohne Datum ignorieren
-
+                if (!datum) return;
                 const items = [];
                 tag.querySelectorAll('.dynamic-row').forEach(row => {
                     const sorte = row.querySelector('select').value;
@@ -461,38 +330,25 @@
                         items.push({ sorte, menge });
                     }
                 });
-
                 if (items.length > 0) {
                     hasValidDay = true;
                     orderData.bestellungen.push({ datum, items });
                 }
             });
-
             if (!hasValidDay) {
                 alert('Bitte fügen Sie mindestens eine Brötchensorte für einen Liefertag hinzu.');
                 return;
             }
-
-            // 3. Senden
             document.getElementById('loading-overlay').style.display = 'flex';
-
             try {
-                const response = await fetch(googleAppScriptUrl, {
+                await fetch(googleAppScriptUrl, {
                     method: 'POST',
-                    mode: 'no-cors', // Wichtig für die Anfrage an das Apps Script
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
-                
-                // Hinweis: Wegen 'no-cors' können wir die Antwort nicht direkt auswerten.
-                // Wir gehen von einem Erfolg aus und zeigen die Erfolgsmeldung.
-                // Das Google Script muss Fehler selbstständig behandeln (z.B. per Mail an dich).
-                
                 document.getElementById('form-container').style.display = 'none';
                 document.getElementById('success-container').style.display = 'block';
-                
             } catch (error) {
                 console.error('Fehler beim Senden:', error);
                 alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
@@ -502,9 +358,15 @@
             }
         }
 
-
+        function sendHeightToParent() {
+            setTimeout(() => {
+                const height = document.documentElement.scrollHeight;
+                parent.postMessage({ type: 'setHeight', height: height }, '*');
+            }, 100);
+        }
+        
         // #####################################################################
-        // ### EVENT LISTENERS (ZENTRALE STEUERUNG) ###
+        // ### EVENT LISTENERS ###
         // #####################################################################
 
         document.getElementById('btn-to-page2').addEventListener('click', () => wechsleSeite('seite2'));
@@ -512,29 +374,22 @@
         document.getElementById('btn-add-day').addEventListener('click', neuenLiefertagErstellen);
         document.getElementById('btn-submit').addEventListener('click', submitForm);
         
-        // Event Delegation: Ein Listener für alle dynamischen Aktionen
         document.body.addEventListener('click', function(e) {
-            // Klick auf "+ Sorte hinzufügen"
             if (e.target.dataset.action === 'add-item') {
                 neueSorteHinzufuegen(e.target);
             }
-            // Klick auf "Entfernen"-Button einer Sorte
             if (e.target.closest('[data-action="remove-item"]')) {
                 e.target.closest('.dynamic-row').remove();
                 updateGesamtpreis();
             }
-            // Klick auf "Entfernen"-Button eines Liefertages
             if (e.target.closest('[data-action="remove-day"]')) {
                 e.target.closest('.delivery-day').remove();
                 updateGesamtpreis();
             }
         });
 
-        // Ein Listener für alle "change"-Events (effizienter)
         document.body.addEventListener('change', function(e) {
-            // Änderung bei Sorte, Menge oder Datum
             if (e.target.matches('input[type=number], select, input[type=date]')) {
-                // Wenn sich das Datum ändert, die Sortenliste aktualisieren
                 if (e.target.matches('input[type=date]')) {
                     updateSortenOptionen(e.target);
                 }
@@ -542,31 +397,11 @@
             }
         });
         
-        // #####################################################################
-        // ### WIX IFRAME RESIZER ###
-        // #####################################################################
-        
-        /**
-         * Sendet die aktuelle Höhe des Dokuments an das übergeordnete Fenster (Wix).
-         */
-        function sendHeightToParent() {
-            // Kurze Verzögerung, um sicherzustellen, dass das Layout abgeschlossen ist
-            setTimeout(() => {
-                const height = document.documentElement.scrollHeight;
-                parent.postMessage({ type: 'setHeight', height: height }, '*');
-            }, 100);
-        }
-
-        // Höhe beim Laden, bei Größenänderung und bei Inhaltsänderungen senden
         window.addEventListener('load', sendHeightToParent);
         window.addEventListener('resize', sendHeightToParent);
-        // MutationObserver beobachtet Änderungen im DOM (z.B. Hinzufügen/Entfernen von Elementen)
         new MutationObserver(sendHeightToParent).observe(document.body, {
-            childList: true,
-            subtree: true,
-            attributes: true
+            childList: true, subtree: true, attributes: true
         });
-
     </script>
 </body>
 </html>
