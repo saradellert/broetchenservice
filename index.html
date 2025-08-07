@@ -9,46 +9,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-bg: #F4F4F2;
-            --container-bg: #FFFFFF;
-            --text-color: #2F2F2F;
-            --primary-color: #2F2F2F;
-            --border-color: #D1D1D1;
-            --shadow-color: rgba(0, 0, 0, 0.08);
-            --danger-color: #D9534F;
+            --primary-bg: #F4F4F2; --container-bg: #FFFFFF; --text-color: #2F2F2F;
+            --primary-color: #2F2F2F; --border-color: #D1D1D1; --shadow-color: rgba(0, 0, 0, 0.08);
+            --danger-color: #D9534F; --error-text-color: #D9534F;
         }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--primary-bg);
-            margin: 0;
-            padding: 1rem;
-            color: var(--text-color);
+            font-family: 'Inter', sans-serif; background-color: var(--primary-bg);
+            margin: 0; padding: 1rem; color: var(--text-color);
         }
         .container {
-            max-width: 700px;
-            margin: 0 auto 2rem auto;
-            background: var(--container-bg);
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 5px 25px var(--shadow-color);
-            border: 1px solid var(--border-color);
+            max-width: 700px; margin: 0 auto; background: var(--container-bg);
+            border-radius: 12px; padding: 2rem;
+            box-shadow: 0 5px 25px var(--shadow-color); border: 1px solid var(--border-color);
         }
         .section-heading {
-            text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
+            text-align: center; font-size: 1.5rem;
+            margin-bottom: 1.5rem; font-weight: 600;
         }
-        label {
-            display: block;
-            margin: 1rem 0 0.5rem;
-            font-weight: 500;
-        }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
         input, select {
             width: 100%; padding: 0.8rem; border: 1px solid var(--border-color);
             border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 1rem;
-            box-sizing: border-box;
+            box-sizing: border-box; transition: border-color 0.2s ease;
         }
+        input.is-invalid, select.is-invalid { border-color: var(--danger-color); }
+        .error-message { color: var(--error-text-color); font-size: 0.85rem; margin-top: 0.3rem; display: none; }
         .btn {
             background-color: var(--primary-color); color: white; padding: 0.9rem 1.5rem;
             border: 2px solid var(--primary-color); border-radius: 8px; font-size: 1rem;
@@ -56,65 +42,48 @@
             transition: background-color 0.2s ease, color 0.2s ease; width: 100%;
         }
         .btn:hover { background-color: #1a1a1a; border-color: #1a1a1a; }
-        .btn-outline { background-color: transparent; color: var(--primary-color); }
-        .btn-outline:hover { background-color: var(--primary-color); color: white; }
-        .btn-small { font-size: 0.9rem; padding: 0.6rem 1rem; margin-top: 1rem; width: auto; }
-
-        .apartment-picker {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 0.75rem;
-        }
+        .apartment-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem; }
         .apartment-picker input[type="radio"] { display: none; }
         .apartment-picker label {
             display: block; padding: 1rem; border: 2px solid var(--border-color);
-            border-radius: 8px; text-align: center; cursor: pointer;
-            transition: all 0.2s ease; font-weight: 500; margin: 0;
+            border-radius: 50px; /* Runde Ecken */
+            text-align: center; cursor: pointer; transition: all 0.2s ease;
+            font-weight: 500; margin: 0;
         }
-        .apartment-picker label:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
+        .apartment-picker.is-invalid label { border-color: var(--danger-color); }
         .apartment-picker input[type="radio"]:checked + label {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
+            background-color: var(--primary-color); color: white; border-color: var(--primary-color);
         }
-        .dynamic-row {
-            display: grid; grid-template-columns: 1fr 80px auto; gap: 0.75rem;
-            align-items: center; margin-top: 0.75rem;
+        .delivery-day-block {
+             background-color: #fdfdfd; padding: 1.5rem;
+             border: 1px solid #e9e9e9; border-radius: 8px; margin-bottom: 1.5rem;
         }
-        .remove-btn {
-            background: none; border: none; cursor: pointer; padding: 0.5rem;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; transition: background-color 0.2s ease;
-        }
-        .remove-btn:hover { background-color: #FEEBEA; }
-        .remove-btn svg { width: 20px; height: 20px; stroke: var(--danger-color); }
         .delivery-day-header {
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem;
         }
         .delivery-day-header input[type="date"] { width: auto; }
+        .dynamic-row {
+            display: grid; grid-template-columns: 1fr 80px auto; gap: 0.75rem;
+            align-items: center; margin-top: 0.75rem;
+        }
+        .btn-small { font-size: 0.9rem; padding: 0.6rem 1rem; margin-top: 1rem; width: auto; }
+        .remove-btn {
+            background: none; border: none; cursor: pointer; padding: 0.5rem;
+            display: flex; align-items: center; justify-content: center;
+        }
         #seite2, #loading-overlay, #success-container { display: none; }
         #loading-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255, 255, 255, 0.8); display: none;
-            justify-content: center; align-items: center; z-index: 1000;
+            background: rgba(255, 255, 255, 0.8); display: flex;
+            justify-content: center; align-items: center; z-index: 1000; display: none;
         }
         .spinner {
             border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color);
             border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #success-message {
-            text-align: center; padding: 2rem; color: var(--text-color);
-            font-size: 1.2rem; line-height: 1.6;
-        }
-        .price-box {
-            text-align: center; font-weight: bold; font-size: 1.5rem;
-            margin: 2rem 0; color: var(--primary-color);
-        }
+        .price-box { text-align: center; font-weight: bold; font-size: 1.5rem; margin: 2rem 0; color: var(--primary-color); }
         .navi { display: flex; justify-content: space-between; gap: 1rem; }
     </style>
 </head>
@@ -123,28 +92,36 @@
         <div id="seite1">
             <div class="container">
                 <h2 class="section-heading">Allgemeine Informationen</h2>
-                <label for="name">Name</label>
-                <input type="text" id="name" required placeholder="Max Mustermann">
-                <label for="email">E-Mail</label>
-                <input type="email" id="email" required placeholder="max.mustermann@example.com">
-                <label>Wohnung / Apartment</label>
-                <div class="apartment-picker" id="wohnung-picker">
-                    <input type="radio" id="w1" name="wohnung" value="La Maison"><label for="w1">La Maison</label>
-                    <input type="radio" id="w2" name="wohnung" value="Suite Maritim"><label for="w2">Suite Maritim</label>
-                    <input type="radio" id="w3" name="wohnung" value="Maisonette Beach"><label for="w3">Maisonette Beach</label>
-                    <input type="radio" id="w4" name="wohnung" value="Cottage & Garden"><label for="w4">Cottage & Garden</label>
-                    <input type="radio" id="w5" name="wohnung" value="Malibu L"><label for="w5">Malibu L</label>
-                    <input type="radio" id="w6" name="wohnung" value="Malibu S"><label for="w6">Malibu S</label>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Max Mustermann">
+                    <div class="error-message" id="name-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="email">E-Mail</label>
+                    <input type="email" id="email" placeholder="max.mustermann@example.com">
+                    <div class="error-message" id="email-error"></div>
+                </div>
+                <div class="form-group">
+                    <label>Wohnung / Apartment</label>
+                    <div class="apartment-picker" id="wohnung-picker">
+                        <input type="radio" id="w1" name="wohnung" value="La Maison"><label for="w1">La Maison</label>
+                        <input type="radio" id="w2" name="wohnung" value="Suite Maritim"><label for="w2">Suite Maritim</label>
+                        <input type="radio" id="w3" name="wohnung" value="Maisonette Beach"><label for="w3">Maisonette Beach</label>
+                        <input type="radio" id="w4" name="wohnung" value="Cottage & Garden"><label for="w4">Cottage & Garden</label>
+                        <input type="radio" id="w5" name="wohnung" value="Malibu L"><label for="w5">Malibu L</label>
+                        <input type="radio" id="w6" name="wohnung" value="Malibu S"><label for="w6">Malibu S</label>
+                    </div>
+                    <div class="error-message" id="wohnung-error"></div>
                 </div>
                 <button id="btn-to-page2" class="btn">Weiter zur Brötchenauswahl</button>
             </div>
         </div>
         <div id="seite2">
-            <div class="container" style="padding-bottom: 1rem; margin-bottom: 1rem;">
+             <div class="container">
                 <h2 class="section-heading">Ihre Bestellung</h2>
-            </div>
-            <div id="lieferbereich"></div>
-            <div class="container">
+                <div id="lieferbereich"></div>
+                <div class="error-message" id="bestellung-error"></div>
                 <button id="btn-add-day" class="btn btn-small" style="width: auto;">+ Weiteren Liefertag hinzufügen</button>
                 <div class="price-box">Gesamtpreis: <span id="gesamtpreis">0,00 €</span></div>
                 <div class="navi">
@@ -156,49 +133,85 @@
     </div>
     <div id="success-container">
         <div class="container">
-            <div id="success-message">
-                ✅<br><br>
-                <strong>Vielen Dank für Ihre Bestellung!</strong>
-                <p>Eine Bestätigung wurde an Ihre E-Mail-Adresse gesendet.</p>
-            </div>
+            <div id="success-message">✅<br><br><strong>Vielen Dank!</strong><p>Eine Bestätigung wurde gesendet.</p></div>
         </div>
     </div>
-    <div id="loading-overlay">
-        <div class="spinner"></div>
-    </div>
+    <div id="loading-overlay"><div class="spinner"></div></div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // HIER DEINE NEUE URL EINFÜGEN!
-        const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbwMIN3aqq1-f9_5_Ud3d6V3xICUCD8hdFOBEYMtNn1ETPawsZg9uhHZvUNYdpnzNqMErw/exec';
+        // HIER UNBEDINGT DEINE AKTUALISIERTE URL EINTRAGEN!
+        const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbwMIN3aqq1-f9_5_Ud3d6V3xICUCD8hdFOBEYMtNn1ETPawsZg9uhHZvUNYdpnzNqMErw/exec'; // Beispiel-URL, ersetzen!
         
         const produkte = { "Müslibrötchen": 1.50, "Roggenkrüsti": 0.99, "Fitnessbrötchen": 1.15, "Kürbiskernbrötchen": 1.20, "Dinkelbrötchen": 1.20, "Schnittbrötchen": 0.60, "Kraftkörnchen": 1.15, "Mohnbrötchen": 0.85, "Sesambrötchen": 0.85, "Morgengoldbrötchen": 0.95, "Kartoffelbrötchen": 1.05, "Kürbiskäsebrötchen": 1.60, "Käsebrötchen": 1.55, "Milchbrötchen": 1.00, "Rosinenbrötchen": 1.10, "Buttercroissant": 1.85, "Croissant": 1.85, "Schokoladencroissant": 2.10, "Laugenstange": 1.60, "Laugenbrötchen": 1.20, "Rosinenschnecke": 2.45, "Donut": 1.85, "Berliner": 1.80, "Mandelhörnchen": 2.80, "großes Kassler": 4.55, "Kraftkornbrot": 4.85, "Münsterländer": 4.50, "Fitnessbrot": 4.85, "Dinkelbrot": 4.55, "Steinofenbrot": 4.55, "Holzhacker": 4.85, "Hamburger Brot": 3.70, "Pottstuten": 4.50 };
         const aufpreisWoche = 1.70;
         const aufpreisWochenende = 2.20;
 
-        const formContainer = document.getElementById('form-container');
-        const successContainer = document.getElementById('success-container');
-        const loadingOverlay = document.getElementById('loading-overlay');
-        const seite1 = document.getElementById('seite1');
-        const seite2 = document.getElementById('seite2');
-        const lieferbereich = document.getElementById('lieferbereich');
-        const gesamtpreisAnzeige = document.getElementById('gesamtpreis');
+        // --- Hilfsfunktion zur Höhenanpassung für Wix ---
+        function sendHeightToParent() {
+            setTimeout(() => {
+                const height = document.body.scrollHeight;
+                parent.postMessage({ type: 'setHeight', height: height }, '*');
+            }, 150); // Kleine Verzögerung, damit das DOM sich anpassen kann
+        }
 
-        async function submitForm() {
-            const nameInput = document.getElementById('name');
-            const emailInput = document.getElementById('email');
-            const wohnungPicker = document.querySelector('input[name="wohnung"]:checked');
-            
-            if (!nameInput.value || !emailInput.value || !wohnungPicker) {
-                alert('Bitte füllen Sie alle allgemeinen Informationen (Name, E-Mail, Wohnung) aus.');
-                wechsleSeite('seite1');
-                return;
+        // --- Validierungsfunktionen ---
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            const inputEl = document.getElementById(elementId.replace('-error', ''));
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            if (inputEl) inputEl.classList.add('is-invalid');
+            if (elementId === 'wohnung-error') document.getElementById('wohnung-picker').classList.add('is-invalid');
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        }
+        
+        function validateForm() {
+            clearErrors();
+            let isValid = true;
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const wohnung = document.querySelector('input[name="wohnung"]:checked');
+
+            if (!name) {
+                showError('name-error', 'Bitte geben Sie Ihren Namen ein.');
+                isValid = false;
             }
-            const wohnungValue = wohnungPicker.value;
+            if (!email) {
+                showError('email-error', 'Bitte geben Sie Ihre E-Mail-Adresse ein.');
+                isValid = false;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('email-error', 'Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+                isValid = false;
+            }
+            if (!wohnung) {
+                showError('wohnung-error', 'Bitte wählen Sie eine Wohnung aus.');
+                isValid = false;
+            }
+            return isValid;
+        }
 
-            const orderData = { name: nameInput.value, email: emailInput.value, wohnung: wohnungValue, bestellungen: [], gesamtpreis: gesamtpreisAnzeige.textContent };
+        // --- Hauptfunktionen ---
+        async function submitForm() {
+            if (!validateForm()) {
+                sendHeightToParent(); // Höhe anpassen, falls Fehlermeldungen erschienen sind
+                return;
+            };
+
+            const orderData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                wohnung: document.querySelector('input[name="wohnung"]:checked').value,
+                bestellungen: [],
+                gesamtpreis: document.getElementById('gesamtpreis').textContent
+            };
+
             let hasValidDay = false;
-            document.querySelectorAll('.delivery-day').forEach(tag => {
+            document.querySelectorAll('.delivery-day-block').forEach(tag => {
                 const datum = tag.querySelector('input[type=date]').value;
                 if (!datum) return;
                 const items = [];
@@ -212,51 +225,106 @@
                     orderData.bestellungen.push({ datum, items });
                 }
             });
+
             if (!hasValidDay) {
-                alert('Bitte fügen Sie mindestens eine Brötchensorte für einen Liefertag hinzu.');
+                showError('bestellung-error', 'Ihre Bestellung ist leer. Bitte fügen Sie mindestens einen Artikel für einen Liefertag hinzu.');
+                sendHeightToParent();
                 return;
             }
-            loadingOverlay.style.display = 'flex';
+
+            document.getElementById('loading-overlay').style.display = 'flex';
             try {
+                // 'no-cors' ist ein "fire-and-forget" Aufruf. Wir bekommen keine Antwort.
                 await fetch(googleAppScriptUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    cache: 'no-cache',
+                    method: 'POST', mode: 'no-cors', cache: 'no-cache',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
-                formContainer.style.display = 'none';
-                successContainer.style.display = 'block';
+                document.getElementById('form-container').style.display = 'none';
+                document.getElementById('success-container').style.display = 'block';
             } catch (error) {
                 console.error('Fehler beim Senden:', error);
                 alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
             } finally {
-                loadingOverlay.style.display = 'none';
+                document.getElementById('loading-overlay').style.display = 'none';
                 sendHeightToParent();
             }
         }
-        
-        function sendHeightToParent() { 
-            setTimeout(() => { 
-                const height = document.documentElement.scrollHeight; 
-                parent.postMessage({ type: 'setHeight', height: height }, '*'); 
-            }, 150); 
+
+        function wechsleSeite(zielSeite) {
+            document.getElementById('seite1').style.display = (zielSeite === 'seite1') ? 'block' : 'none';
+            document.getElementById('seite2').style.display = (zielSeite === 'seite2') ? 'block' : 'none';
+            if (zielSeite === 'seite2' && document.getElementById('lieferbereich').childElementCount === 0) {
+                neuenLiefertagErstellen();
+            }
+            sendHeightToParent();
         }
 
-        function wechsleSeite(zielSeite) { seite1.style.display = (zielSeite === 'seite1') ? 'block' : 'none'; seite2.style.display = (zielSeite === 'seite2') ? 'block' : 'none'; if (zielSeite === 'seite2' && lieferbereich.childElementCount === 0) { neuenLiefertagErstellen(); } sendHeightToParent(); }
-        function neuenLiefertagErstellen() { const tagContainer = document.createElement("div"); tagContainer.className = "container delivery-day"; tagContainer.innerHTML = `<div class="delivery-day-header"><input type="date" required /><button class="remove-btn" data-action="remove-day" title="Diesen Liefertag entfernen"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></button></div><div class="sortenliste"></div><button class="btn btn-small" data-action="add-item">+ Sorte hinzufügen</button>`; lieferbereich.appendChild(tagContainer); neueSorteHinzufuegen(tagContainer.querySelector('[data-action="add-item"]')); sendHeightToParent(); }
-        function neueSorteHinzufuegen(addButton) { const sortenliste = addButton.previousElementSibling; const row = document.createElement("div"); row.className = "dynamic-row"; const datumsInput = addButton.closest('.delivery-day').querySelector('input[type=date]'); const istWochenende = isWeekend(datumsInput.value); let optionenHTML = '<option value="" disabled selected>Sorte wählen</option>'; for (const [name, preis] of Object.entries(produkte)) { if (istWochenende && name === "Müslibrötchen") continue; optionenHTML += `<option value="${name}">${name}</option>`; } row.innerHTML = `<select required>${optionenHTML}</select><input type="number" min="1" value="1" required /><button class="remove-btn" data-action="remove-item" title="Diese Sorte entfernen"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></button>`; sortenliste.appendChild(row); updateGesamtpreis(); }
-        function updateSortenOptionen(datumsInput) { const liefertag = datumsInput.closest('.delivery-day'); const istWochenende = isWeekend(datumsInput.value); liefertag.querySelectorAll('.sortenliste select').forEach(select => { const aktuellerWert = select.value; if (istWochenende && aktuellerWert === "Müslibrötchen") { select.closest('.dynamic-row').remove(); } else { const muesliOption = select.querySelector('option[value="Müslibrötchen"]'); if (muesliOption) muesliOption.hidden = istWochenende; } }); updateGesamtpreis(); }
-        function updateGesamtpreis() { let gesamt = 0; document.querySelectorAll('.delivery-day').forEach(tag => { const datumsInput = tag.querySelector('input[type=date]'); if (!datumsInput.value) return; const istWochenende = isWeekend(datumsInput.value); const aufpreis = istWochenende ? aufpreisWochenende : aufpreisWoche; let summeProTag = 0; tag.querySelectorAll('.dynamic-row').forEach(row => { const sorte = row.querySelector('select').value; const menge = parseInt(row.querySelector('input[type=number]').value) || 0; const preis = produkte[sorte] || 0; summeProTag += preis * menge; }); if (summeProTag > 0) { gesamt += summeProTag + aufpreis; } }); gesamtpreisAnzeige.textContent = gesamt.toFixed(2).replace('.', ',') + " €"; sendHeightToParent(); }
-        function isWeekend(dateString) { if (!dateString) return false; const date = new Date(dateString); const day = date.getDay(); return day === 6 || day === 0; }
+        function neuenLiefertagErstellen() {
+            const tagContainer = document.createElement("div");
+            tagContainer.className = "delivery-day-block";
+            tagContainer.innerHTML = `<div class="delivery-day-header"><input type="date"/><button class="remove-btn" data-action="remove-day" title="Diesen Liefertag entfernen">&times;</button></div><div class="sortenliste"></div><button class="btn btn-small" data-action="add-item">+ Sorte hinzufügen</button>`;
+            document.getElementById('lieferbereich').appendChild(tagContainer);
+            neueSorteHinzufuegen(tagContainer.querySelector('[data-action="add-item"]'));
+            sendHeightToParent();
+        }
+
+        function neueSorteHinzufuegen(addButton) {
+            const sortenliste = addButton.previousElementSibling;
+            const row = document.createElement("div"); row.className = "dynamic-row";
+            let optionenHTML = '<option value="" disabled selected>Sorte wählen</option>';
+            for (const name of Object.keys(produkte)) { optionenHTML += `<option value="${name}">${name}</option>`; }
+            row.innerHTML = `<select>${optionenHTML}</select><input type="number" min="1" value="1"/><button class="remove-btn" data-action="remove-item" title="Diese Sorte entfernen">&times;</button>`;
+            sortenliste.appendChild(row);
+            updateGesamtpreis(); sendHeightToParent();
+        }
+
+        function updateGesamtpreis() {
+            let gesamt = 0;
+            document.querySelectorAll('.delivery-day-block').forEach(tag => {
+                const datumsInput = tag.querySelector('input[type=date]');
+                if (!datumsInput.value) return;
+                const istWochenende = (d => d.getDay() === 6 || d.getDay() === 0)(new Date(datumsInput.value));
+                const aufpreis = istWochenende ? aufpreisWochenende : aufpreisWoche;
+                let summeProTag = 0;
+                tag.querySelectorAll('.dynamic-row').forEach(row => {
+                    const sorte = row.querySelector('select').value;
+                    const menge = parseInt(row.querySelector('input[type=number]').value) || 0;
+                    summeProTag += (produkte[sorte] || 0) * menge;
+                });
+                if (summeProTag > 0) gesamt += summeProTag + aufpreis;
+            });
+            document.getElementById('gesamtpreis').textContent = gesamt.toFixed(2).replace('.', ',') + " €";
+        }
         
-        document.getElementById('btn-to-page2').addEventListener('click', () => wechsleSeite('seite2'));
+        // --- Event Listeners ---
+        document.getElementById('btn-to-page2').addEventListener('click', () => {
+             if (validateForm()) wechsleSeite('seite2');
+             else sendHeightToParent();
+        });
         document.getElementById('btn-to-page1').addEventListener('click', () => wechsleSeite('seite1'));
         document.getElementById('btn-add-day').addEventListener('click', neuenLiefertagErstellen);
         document.getElementById('btn-submit').addEventListener('click', submitForm);
-        document.body.addEventListener('click', function(e) { const button = e.target.closest('button'); if (!button) return; const action = button.dataset.action; if (action === 'add-item') { neueSorteHinzufuegen(button); } else if (action === 'remove-item') { button.closest('.dynamic-row').remove(); updateGesamtpreis(); } else if (action === 'remove-day') { button.closest('.delivery-day').remove(); updateGesamtpreis(); } });
-        document.body.addEventListener('change', function(e) { const target = e.target; if (target.matches('input[type=number], select, input[type=date]')) { if (target.matches('input[type=date]')) { updateSortenOptionen(target); } updateGesamtpreis(); } });
-        new MutationObserver(sendHeightToParent).observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
+
+        document.body.addEventListener('click', function(e) {
+            const button = e.target.closest('button[data-action]');
+            if (!button) return;
+            const action = button.dataset.action;
+            if (action === 'add-item') neueSorteHinzufuegen(button);
+            else if (action === 'remove-item') {
+                button.closest('.dynamic-row').remove();
+                updateGesamtpreis(); sendHeightToParent();
+            } else if (action === 'remove-day') {
+                button.closest('.delivery-day-block').remove();
+                updateGesamtpreis(); sendHeightToParent();
+            }
+        });
+        document.body.addEventListener('change', e => {
+            if (e.target.matches('input[type=number], select, input[type=date]')) updateGesamtpreis();
+        });
+
+        // Fallback: Sende Höhe bei jeder Änderung am Body
+        new MutationObserver(sendHeightToParent).observe(document.body, { childList: true, subtree: true, attributes: true });
     });
     </script>
 </body>
