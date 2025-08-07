@@ -13,6 +13,7 @@
             --primary-color: #2F2F2F; --border-color: #D1D1D1; --shadow-color: rgba(0, 0, 0, 0.08);
             --danger-color: #D9534F; --error-text-color: #D9534F;
         }
+        html { font-size: 16px; } /* Basis-Schriftgröße für responsive Einheiten (rem) */
         body {
             font-family: 'Inter', sans-serif; background-color: var(--primary-bg);
             margin: 0; padding: 1rem; color: var(--text-color);
@@ -46,8 +47,7 @@
         .apartment-picker input[type="radio"] { display: none; }
         .apartment-picker label {
             display: block; padding: 1rem; border: 2px solid var(--border-color);
-            border-radius: 50px; /* Runde Ecken */
-            text-align: center; cursor: pointer; transition: all 0.2s ease;
+            border-radius: 50px; text-align: center; cursor: pointer; transition: all 0.2s ease;
             font-weight: 500; margin: 0;
         }
         .apartment-picker.is-invalid label { border-color: var(--danger-color); }
@@ -59,32 +59,58 @@
              border: 1px solid #e9e9e9; border-radius: 8px; margin-bottom: 1.5rem;
         }
         .delivery-day-header {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex; justify-content: space-between; align-items: flex-end; /* Angepasst */
             border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem;
         }
-        .delivery-day-header input[type="date"] { width: auto; }
+        .delivery-day-header .date-picker-group { flex-grow: 1; }
+        .delivery-day-header input[type="date"] { width: auto; min-width: 150px; }
         .dynamic-row {
             display: grid; grid-template-columns: 1fr 80px auto; gap: 0.75rem;
-            align-items: center; margin-top: 0.75rem;
+            align-items: center; margin-top: 0.5rem;
+        }
+        .dynamic-row-header {
+            display: grid; grid-template-columns: 1fr 80px auto; gap: 0.75rem;
+            font-size: 0.8rem; font-weight: 500; color: #6c757d; margin-top: 1rem; padding: 0 0.5rem;
         }
         .btn-small { font-size: 0.9rem; padding: 0.6rem 1rem; margin-top: 1rem; width: auto; }
         .remove-btn {
             background: none; border: none; cursor: pointer; padding: 0.5rem;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+            color: var(--danger-color); line-height: 1;
         }
         #seite2, #loading-overlay, #success-container { display: none; }
-        #loading-overlay {
+        #loading-overlay, #success-container {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255, 255, 255, 0.8); display: flex;
-            justify-content: center; align-items: center; z-index: 1000; display: none;
+            background: rgba(255, 255, 255, 0.9); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
         }
         .spinner {
             border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color);
             border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* NEU: Styles für animiertes Häkchen */
+        #success-message { text-align: center; }
+        .checkmark__circle { stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 2; stroke-miterlimit: 10; stroke: #7ac142; fill: none; animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards; }
+        .checkmark { width: 80px; height: 80px; border-radius: 50%; display: block; stroke-width: 3; stroke: #fff; stroke-miterlimit: 10; margin: 0 auto 20px auto; box-shadow: inset 0px 0px 0px #7ac142; animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both; }
+        .checkmark__check { transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48; animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards; }
+        @keyframes stroke { 100% { stroke-dashoffset: 0; } }
+        @keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
+        @keyframes fill { 100% { box-shadow: inset 0px 0px 0px 40px #7ac142; } }
+
         .price-box { text-align: center; font-weight: bold; font-size: 1.5rem; margin: 2rem 0; color: var(--primary-color); }
         .navi { display: flex; justify-content: space-between; gap: 1rem; }
+        
+        /* NEU: Media Query für mobile Geräte */
+        @media (max-width: 768px) {
+            html { font-size: 14px; }
+            .container { padding: 1.5rem; }
+            .apartment-picker { grid-template-columns: 1fr 1fr; }
+            .apartment-picker label { padding: 0.8rem; }
+            .dynamic-row, .dynamic-row-header { grid-template-columns: 1fr 60px auto; gap: 0.5rem; }
+            .navi { flex-direction: column-reverse; }
+        }
     </style>
 </head>
 <body>
@@ -92,16 +118,8 @@
         <div id="seite1">
             <div class="container">
                 <h2 class="section-heading">Allgemeine Informationen</h2>
-                <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" id="name" placeholder="Max Mustermann">
-                    <div class="error-message" id="name-error"></div>
-                </div>
-                <div class="form-group">
-                    <label for="email">E-Mail</label>
-                    <input type="email" id="email" placeholder="max.mustermann@example.com">
-                    <div class="error-message" id="email-error"></div>
-                </div>
+                <div class="form-group"><label for="name">Name</label><input type="text" id="name" placeholder="Max Mustermann"><div class="error-message" id="name-error"></div></div>
+                <div class="form-group"><label for="email">E-Mail</label><input type="email" id="email" placeholder="max.mustermann@example.com"><div class="error-message" id="email-error"></div></div>
                 <div class="form-group">
                     <label>Wohnung / Apartment</label>
                     <div class="apartment-picker" id="wohnung-picker">
@@ -131,31 +149,27 @@
             </div>
         </div>
     </div>
-    <div id="success-container">
-        <div class="container">
-            <div id="success-message">✅<br><br><strong>Vielen Dank!</strong><p>Eine Bestätigung wurde gesendet.</p></div>
+    <div id="success-container" style="display: none;">
+        <div id="success-message">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+            <h2 style="font-weight: 600;">Vielen Dank!</h2>
+            <p>Ihre Bestellung wurde erfolgreich übermittelt. Eine Bestätigung wurde an Ihre E-Mail-Adresse gesendet.</p>
         </div>
     </div>
-    <div id="loading-overlay"><div class="spinner"></div></div>
+    <div id="loading-overlay" style="display: none;"><div class="spinner"></div></div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // HIER UNBEDINGT DEINE AKTUALISIERTE URL EINTRAGEN!
-        const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbwMIN3aqq1-f9_5_Ud3d6V3xICUCD8hdFOBEYMtNn1ETPawsZg9uhHZvUNYdpnzNqMErw/exec'; // Beispiel-URL, ersetzen!
+        const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbwMIN3aqq1-f9_5_Ud3d6V3xICUCD8hdFOBEYMtNn1ETPawsZg9uhHZvUNYdpnzNqMErw/exec'; // WICHTIG: Ersetzen!
         
         const produkte = { "Müslibrötchen": 1.50, "Roggenkrüsti": 0.99, "Fitnessbrötchen": 1.15, "Kürbiskernbrötchen": 1.20, "Dinkelbrötchen": 1.20, "Schnittbrötchen": 0.60, "Kraftkörnchen": 1.15, "Mohnbrötchen": 0.85, "Sesambrötchen": 0.85, "Morgengoldbrötchen": 0.95, "Kartoffelbrötchen": 1.05, "Kürbiskäsebrötchen": 1.60, "Käsebrötchen": 1.55, "Milchbrötchen": 1.00, "Rosinenbrötchen": 1.10, "Buttercroissant": 1.85, "Croissant": 1.85, "Schokoladencroissant": 2.10, "Laugenstange": 1.60, "Laugenbrötchen": 1.20, "Rosinenschnecke": 2.45, "Donut": 1.85, "Berliner": 1.80, "Mandelhörnchen": 2.80, "großes Kassler": 4.55, "Kraftkornbrot": 4.85, "Münsterländer": 4.50, "Fitnessbrot": 4.85, "Dinkelbrot": 4.55, "Steinofenbrot": 4.55, "Holzhacker": 4.85, "Hamburger Brot": 3.70, "Pottstuten": 4.50 };
         const aufpreisWoche = 1.70;
         const aufpreisWochenende = 2.20;
 
-        // --- Hilfsfunktion zur Höhenanpassung für Wix ---
-        function sendHeightToParent() {
-            setTimeout(() => {
-                const height = document.body.scrollHeight;
-                parent.postMessage({ type: 'setHeight', height: height }, '*');
-            }, 150); // Kleine Verzögerung, damit das DOM sich anpassen kann
-        }
-
-        // --- Validierungsfunktionen ---
+        function sendHeightToParent() { setTimeout(() => { parent.postMessage({ type: 'setHeight', height: document.body.scrollHeight }, '*'); }, 150); }
         function showError(elementId, message) {
             const errorEl = document.getElementById(elementId);
             const inputEl = document.getElementById(elementId.replace('-error', ''));
@@ -164,113 +178,82 @@
             if (inputEl) inputEl.classList.add('is-invalid');
             if (elementId === 'wohnung-error') document.getElementById('wohnung-picker').classList.add('is-invalid');
         }
-
         function clearErrors() {
             document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
         }
-        
         function validateForm() {
-            clearErrors();
-            let isValid = true;
-            const name = document.getElementById('name').value.trim();
+            clearErrors(); let isValid = true;
+            if (!document.getElementById('name').value.trim()) { showError('name-error', 'Bitte geben Sie Ihren Namen ein.'); isValid = false; }
             const email = document.getElementById('email').value.trim();
-            const wohnung = document.querySelector('input[name="wohnung"]:checked');
-
-            if (!name) {
-                showError('name-error', 'Bitte geben Sie Ihren Namen ein.');
-                isValid = false;
-            }
-            if (!email) {
-                showError('email-error', 'Bitte geben Sie Ihre E-Mail-Adresse ein.');
-                isValid = false;
-            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                showError('email-error', 'Bitte geben Sie eine gültige E-Mail-Adresse ein.');
-                isValid = false;
-            }
-            if (!wohnung) {
-                showError('wohnung-error', 'Bitte wählen Sie eine Wohnung aus.');
-                isValid = false;
-            }
+            if (!email) { showError('email-error', 'Bitte geben Sie Ihre E-Mail-Adresse ein.'); isValid = false;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('email-error', 'Bitte geben Sie eine gültige E-Mail-Adresse ein.'); isValid = false; }
+            if (!document.querySelector('input[name="wohnung"]:checked')) { showError('wohnung-error', 'Bitte wählen Sie eine Wohnung aus.'); isValid = false; }
             return isValid;
         }
-
-        // --- Hauptfunktionen ---
         async function submitForm() {
-            if (!validateForm()) {
-                sendHeightToParent(); // Höhe anpassen, falls Fehlermeldungen erschienen sind
-                return;
-            };
-
+            if (!validateForm()) { sendHeightToParent(); return; };
             const orderData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                wohnung: document.querySelector('input[name="wohnung"]:checked').value,
-                bestellungen: [],
+                name: document.getElementById('name').value, email: document.getElementById('email').value,
+                wohnung: document.querySelector('input[name="wohnung"]:checked').value, bestellungen: [],
                 gesamtpreis: document.getElementById('gesamtpreis').textContent
             };
-
             let hasValidDay = false;
             document.querySelectorAll('.delivery-day-block').forEach(tag => {
-                const datum = tag.querySelector('input[type=date]').value;
-                if (!datum) return;
+                const datum = tag.querySelector('input[type=date]').value; if (!datum) return;
                 const items = [];
                 tag.querySelectorAll('.dynamic-row').forEach(row => {
-                    const sorte = row.querySelector('select').value;
-                    const menge = row.querySelector('input[type=number]').value;
+                    const sorte = row.querySelector('select').value; const menge = row.querySelector('input[type=number]').value;
                     if (sorte && menge > 0) items.push({ sorte, menge });
                 });
-                if (items.length > 0) {
-                    hasValidDay = true;
-                    orderData.bestellungen.push({ datum, items });
-                }
+                if (items.length > 0) { hasValidDay = true; orderData.bestellungen.push({ datum, items }); }
             });
-
-            if (!hasValidDay) {
-                showError('bestellung-error', 'Ihre Bestellung ist leer. Bitte fügen Sie mindestens einen Artikel für einen Liefertag hinzu.');
-                sendHeightToParent();
-                return;
-            }
-
+            if (!hasValidDay) { showError('bestellung-error', 'Ihre Bestellung ist leer. Bitte fügen Sie mindestens einen Artikel hinzu.'); sendHeightToParent(); return; }
             document.getElementById('loading-overlay').style.display = 'flex';
             try {
-                // 'no-cors' ist ein "fire-and-forget" Aufruf. Wir bekommen keine Antwort.
                 await fetch(googleAppScriptUrl, {
-                    method: 'POST', mode: 'no-cors', cache: 'no-cache',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', mode: 'no-cors', cache: 'no-cache', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
                 document.getElementById('form-container').style.display = 'none';
-                document.getElementById('success-container').style.display = 'block';
+                document.getElementById('success-container').style.display = 'flex';
             } catch (error) {
-                console.error('Fehler beim Senden:', error);
-                alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+                console.error('Fehler beim Senden:', error); alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
             } finally {
                 document.getElementById('loading-overlay').style.display = 'none';
                 sendHeightToParent();
             }
         }
-
         function wechsleSeite(zielSeite) {
             document.getElementById('seite1').style.display = (zielSeite === 'seite1') ? 'block' : 'none';
             document.getElementById('seite2').style.display = (zielSeite === 'seite2') ? 'block' : 'none';
-            if (zielSeite === 'seite2' && document.getElementById('lieferbereich').childElementCount === 0) {
-                neuenLiefertagErstellen();
-            }
+            if (zielSeite === 'seite2' && document.getElementById('lieferbereich').childElementCount === 0) neuenLiefertagErstellen();
             sendHeightToParent();
         }
-
         function neuenLiefertagErstellen() {
             const tagContainer = document.createElement("div");
             tagContainer.className = "delivery-day-block";
-            tagContainer.innerHTML = `<div class="delivery-day-header"><input type="date"/><button class="remove-btn" data-action="remove-day" title="Diesen Liefertag entfernen">&times;</button></div><div class="sortenliste"></div><button class="btn btn-small" data-action="add-item">+ Sorte hinzufügen</button>`;
+            // NEU: HTML mit Labels für Datum und Überschriften für die Sortenliste
+            tagContainer.innerHTML = `
+                <div class="delivery-day-header">
+                    <div class="date-picker-group">
+                        <label>Datum</label>
+                        <input type="date"/>
+                    </div>
+                    <button class="remove-btn" data-action="remove-day" title="Diesen Liefertag entfernen">&times;</button>
+                </div>
+                <div class="dynamic-row-header">
+                    <div>Brötchensorte</div>
+                    <div>Menge</div>
+                </div>
+                <div class="sortenliste"></div>
+                <button class="btn btn-small" data-action="add-item">+ Sorte hinzufügen</button>`;
             document.getElementById('lieferbereich').appendChild(tagContainer);
             neueSorteHinzufuegen(tagContainer.querySelector('[data-action="add-item"]'));
             sendHeightToParent();
         }
-
         function neueSorteHinzufuegen(addButton) {
-            const sortenliste = addButton.previousElementSibling;
+            const sortenliste = addButton.parentElement.querySelector('.sortenliste');
             const row = document.createElement("div"); row.className = "dynamic-row";
             let optionenHTML = '<option value="" disabled selected>Sorte wählen</option>';
             for (const name of Object.keys(produkte)) { optionenHTML += `<option value="${name}">${name}</option>`; }
@@ -278,52 +261,33 @@
             sortenliste.appendChild(row);
             updateGesamtpreis(); sendHeightToParent();
         }
-
         function updateGesamtpreis() {
             let gesamt = 0;
             document.querySelectorAll('.delivery-day-block').forEach(tag => {
-                const datumsInput = tag.querySelector('input[type=date]');
-                if (!datumsInput.value) return;
+                const datumsInput = tag.querySelector('input[type=date]'); if (!datumsInput.value) return;
                 const istWochenende = (d => d.getDay() === 6 || d.getDay() === 0)(new Date(datumsInput.value));
                 const aufpreis = istWochenende ? aufpreisWochenende : aufpreisWoche;
                 let summeProTag = 0;
                 tag.querySelectorAll('.dynamic-row').forEach(row => {
-                    const sorte = row.querySelector('select').value;
-                    const menge = parseInt(row.querySelector('input[type=number]').value) || 0;
+                    const sorte = row.querySelector('select').value; const menge = parseInt(row.querySelector('input[type=number]').value) || 0;
                     summeProTag += (produkte[sorte] || 0) * menge;
                 });
                 if (summeProTag > 0) gesamt += summeProTag + aufpreis;
             });
             document.getElementById('gesamtpreis').textContent = gesamt.toFixed(2).replace('.', ',') + " €";
         }
-        
-        // --- Event Listeners ---
-        document.getElementById('btn-to-page2').addEventListener('click', () => {
-             if (validateForm()) wechsleSeite('seite2');
-             else sendHeightToParent();
-        });
+        document.getElementById('btn-to-page2').addEventListener('click', () => { if (validateForm()) wechsleSeite('seite2'); else sendHeightToParent(); });
         document.getElementById('btn-to-page1').addEventListener('click', () => wechsleSeite('seite1'));
         document.getElementById('btn-add-day').addEventListener('click', neuenLiefertagErstellen);
         document.getElementById('btn-submit').addEventListener('click', submitForm);
-
         document.body.addEventListener('click', function(e) {
-            const button = e.target.closest('button[data-action]');
-            if (!button) return;
+            const button = e.target.closest('button[data-action]'); if (!button) return;
             const action = button.dataset.action;
             if (action === 'add-item') neueSorteHinzufuegen(button);
-            else if (action === 'remove-item') {
-                button.closest('.dynamic-row').remove();
-                updateGesamtpreis(); sendHeightToParent();
-            } else if (action === 'remove-day') {
-                button.closest('.delivery-day-block').remove();
-                updateGesamtpreis(); sendHeightToParent();
-            }
+            else if (action === 'remove-item') { button.closest('.dynamic-row').remove(); updateGesamtpreis(); sendHeightToParent(); }
+            else if (action === 'remove-day') { button.closest('.delivery-day-block').remove(); updateGesamtpreis(); sendHeightToParent(); }
         });
-        document.body.addEventListener('change', e => {
-            if (e.target.matches('input[type=number], select, input[type=date]')) updateGesamtpreis();
-        });
-
-        // Fallback: Sende Höhe bei jeder Änderung am Body
+        document.body.addEventListener('change', e => { if (e.target.matches('input[type=number], select, input[type=date]')) updateGesamtpreis(); });
         new MutationObserver(sendHeightToParent).observe(document.body, { childList: true, subtree: true, attributes: true });
     });
     </script>
