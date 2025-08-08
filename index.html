@@ -1,295 +1,355 @@
+<!-- index.html  —  Brötchen-Bestellung (modern, smooth) -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Brötchen-Bestellung</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-bg: #F4F4F2; --container-bg: #FFFFFF; --text-color: #2F2F2F;
-            --primary-color: #2F2F2F; --border-color: #D1D1D1; --shadow-color: rgba(0, 0, 0, 0.08);
-            --danger-color: #D9534F; --error-text-color: #D9534F;
-        }
-        html { font-size: 16px; } /* Basis-Schriftgröße für responsive Einheiten (rem) */
-        body {
-            font-family: 'Inter', sans-serif; background-color: var(--primary-bg);
-            margin: 0; padding: 1rem; color: var(--text-color);
-        }
-        .container {
-            max-width: 700px; margin: 0 auto; background: var(--container-bg);
-            border-radius: 12px; padding: 2rem;
-            box-shadow: 0 5px 25px var(--shadow-color); border: 1px solid var(--border-color);
-        }
-        .section-heading {
-            text-align: center; font-size: 1.5rem;
-            margin-bottom: 1.5rem; font-weight: 600;
-        }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-        input, select {
-            width: 100%; padding: 0.8rem; border: 1px solid var(--border-color);
-            border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 1rem;
-            box-sizing: border-box; transition: border-color 0.2s ease;
-        }
-        input.is-invalid, select.is-invalid { border-color: var(--danger-color); }
-        .error-message { color: var(--error-text-color); font-size: 0.85rem; margin-top: 0.3rem; display: none; }
-        .btn {
-            background-color: var(--primary-color); color: white; padding: 0.9rem 1.5rem;
-            border: 2px solid var(--primary-color); border-radius: 8px; font-size: 1rem;
-            font-weight: 500; cursor: pointer; margin-top: 1.5rem;
-            transition: background-color 0.2s ease, color 0.2s ease; width: 100%;
-        }
-        .btn:hover { background-color: #1a1a1a; border-color: #1a1a1a; }
-        .apartment-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem; }
-        .apartment-picker input[type="radio"] { display: none; }
-        .apartment-picker label {
-            display: block; padding: 1rem; border: 2px solid var(--border-color);
-            border-radius: 50px; text-align: center; cursor: pointer; transition: all 0.2s ease;
-            font-weight: 500; margin: 0;
-        }
-        .apartment-picker.is-invalid label { border-color: var(--danger-color); }
-        .apartment-picker input[type="radio"]:checked + label {
-            background-color: var(--primary-color); color: white; border-color: var(--primary-color);
-        }
-        .delivery-day-block {
-             background-color: #fdfdfd; padding: 1.5rem;
-             border: 1px solid #e9e9e9; border-radius: 8px; margin-bottom: 1.5rem;
-        }
-        .delivery-day-header {
-            display: flex; justify-content: space-between; align-items: flex-end; /* Angepasst */
-            border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem;
-        }
-        .delivery-day-header .date-picker-group { flex-grow: 1; }
-        .delivery-day-header input[type="date"] { width: auto; min-width: 150px; }
-        .dynamic-row {
-            display: grid; grid-template-columns: 1fr 80px auto; gap: 0.75rem;
-            align-items: center; margin-top: 0.5rem;
-        }
-        .dynamic-row-header {
-            display: grid; grid-template-columns: 1fr 80px auto; gap: 0.75rem;
-            font-size: 0.8rem; font-weight: 500; color: #6c757d; margin-top: 1rem; padding: 0 0.5rem;
-        }
-        .btn-small { font-size: 0.9rem; padding: 0.6rem 1rem; margin-top: 1rem; width: auto; }
-        .remove-btn {
-            background: none; border: none; cursor: pointer; padding: 0.5rem;
-            display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
-            color: var(--danger-color); line-height: 1;
-        }
-        #seite2, #loading-overlay, #success-container { display: none; }
-        #loading-overlay, #success-container {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255, 255, 255, 0.9); display: flex;
-            justify-content: center; align-items: center; z-index: 1000;
-        }
-        .spinner {
-            border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color);
-            border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brötchen-Bestellung</title>
 
-        /* NEU: Styles für animiertes Häkchen */
-        #success-message { text-align: center; }
-        .checkmark__circle { stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 2; stroke-miterlimit: 10; stroke: #7ac142; fill: none; animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards; }
-        .checkmark { width: 80px; height: 80px; border-radius: 50%; display: block; stroke-width: 3; stroke: #fff; stroke-miterlimit: 10; margin: 0 auto 20px auto; box-shadow: inset 0px 0px 0px #7ac142; animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both; }
-        .checkmark__check { transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48; animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards; }
-        @keyframes stroke { 100% { stroke-dashoffset: 0; } }
-        @keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
-        @keyframes fill { 100% { box-shadow: inset 0px 0px 0px 40px #7ac142; } }
+  <!-- CONFIG (Frontend) -->
+  <script>
+    window.BROETCHENFORM_CONFIG = {
+      // Deine veröffentlichte Web-App-URL aus Apps Script (Deploy -> Web App)
+      googleAppScriptUrl: 'https://script.google.com/macros/s/AKfycbwMIN3aqq1-f9_5_Ud3d6V3xICUCD8hdFOBEYMtNn1ETPawsZg9uhHZvUNYdpnzNqMErw/exec',
+      hideMueslibroetchenOnWeekend: true
+    };
+  </script>
 
-        .price-box { text-align: center; font-weight: bold; font-size: 1.5rem; margin: 2rem 0; color: var(--primary-color); }
-        .navi { display: flex; justify-content: space-between; gap: 1rem; }
-        
-        /* NEU: Media Query für mobile Geräte */
-        @media (max-width: 768px) {
-            html { font-size: 14px; }
-            .container { padding: 1.5rem; }
-            .apartment-picker { grid-template-columns: 1fr 1fr; }
-            .apartment-picker label { padding: 0.8rem; }
-            .dynamic-row, .dynamic-row-header { grid-template-columns: 1fr 60px auto; gap: 0.5rem; }
-            .navi { flex-direction: column-reverse; }
-        }
-    </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#DFDCD7;                 /* deine Site-Farbe */
+      --card:#FFFFFFF2;             /* leicht glasig */
+      --text:#292826;
+      --brand:#292826;
+      --border:#E2E2E2;
+      --shadow:0 15px 40px rgba(0,0,0,.10);
+      --danger:#D9534F;
+      --ok:#2C8C5E;
+    }
+    *{box-sizing:border-box}
+    html{font-size:16px}
+    body{
+      margin:0; color:var(--text); background:radial-gradient(1200px 600px at 20% -10%, #f1f0ee 0%, var(--bg) 60%, #d8d5cf 100%);
+      font-family:'Inter',system-ui,Segoe UI,Arial,sans-serif;
+      min-height:100svh; padding:24px;
+    }
+    .shell{max-width:760px;margin:0 auto}
+    .card{
+      background:var(--card); border:1px solid var(--border); border-radius:20px; padding:26px;
+      box-shadow:var(--shadow); backdrop-filter:saturate(180%) blur(6px); transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .card:hover{transform:translateY(-1px)}
+    h2.section{font-size:1.6rem;margin:0 0 14px 0;font-weight:700;letter-spacing:.2px}
+    p.sub{margin:.25rem 0 1.25rem;color:#6a6a69}
+    .grid{display:grid;gap:14px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:768px){.row{grid-template-columns:1fr}}
+    label{font-weight:600;font-size:.95rem;margin:6px 0 6px 2px;display:block}
+    input,select,button{
+      font:inherit
+    }
+    input,select{
+      width:100%; background:#fff; border:1px solid var(--border); border-radius:12px; padding:.9rem .95rem;
+      outline:none; transition:border-color .15s ease, box-shadow .15s ease, transform .05s ease;
+      box-shadow:inset 0 0 0 rgba(0,0,0,0);
+    }
+    input:focus,select:focus{
+      border-color:#bcbcbc; box-shadow:0 0 0 4px #00000010;
+    }
+    input.is-invalid,select.is-invalid{border-color:var(--danger); box-shadow:0 0 0 4px #D9534F20}
+    .hint{font-size:.82rem;color:#7b7a79;margin-top:6px}
+    .error{font-size:.86rem;color:var(--danger);display:none;margin-top:6px}
+    .apts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+    .apts input{display:none}
+    .apt{
+      border:1px solid var(--border); border-radius:999px; padding:.9rem 1rem; text-align:center; cursor:pointer; user-select:none;
+      transition:transform .06s ease, background .2s ease, color .2s ease, border-color .2s ease;
+      font-weight:600; background:#fff;
+    }
+    .apts input:checked + .apt{background:var(--brand); color:#fff; border-color:var(--brand)}
+    .apts.invalid .apt{border-color:var(--danger)}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;margin-top:18px}
+    .btn{
+      border:2px solid var(--brand); background:var(--brand); color:#fff; padding:.95rem 1.2rem; border-radius:12px; cursor:pointer; font-weight:700;
+      width:100%; transition:transform .05s ease, filter .15s ease, background .15s ease, color .15s ease; letter-spacing:.1px
+    }
+    .btn:hover{filter:brightness(.96)}
+    .btn:active{transform:translateY(1px)}
+    .btn.alt{background:#fff;color:var(--brand)}
+    .pill{display:inline-flex;align-items:center;gap:8px;border:1px dashed var(--border);padding:.35rem .6rem;border-radius:999px;color:#6a6a69;font-size:.86rem}
+    .price{font-weight:800;font-size:1.6rem;margin:14px 0;color:var(--brand)}
+    .day{border:1px dashed var(--border);border-radius:16px;padding:14px;margin:10px 0 16px;background:#fff}
+    .dayhead{display:flex;align-items:flex-end;gap:10px;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px}
+    .dayrm{border:none;background:transparent;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
+    .dynhdr{display:grid;grid-template-columns:1fr 90px 40px;gap:10px;font-size:.8rem;color:#81807d;margin:6px 4px 0 4px}
+    .dynrow{display:grid;grid-template-columns:1fr 90px 40px;gap:10px;align-items:center;margin-top:6px}
+    .remove{border:none;background:transparent;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
+    .badge{background:#f3f3f2;border:1px solid var(--border);border-radius:999px;padding:.35rem .6rem;font-size:.83rem}
+    .ok{color:var(--ok)}
+    .overlay, .success{
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#ffffffee;z-index:30
+    }
+    .spinner{width:52px;height:52px;border:5px solid #eee;border-top:5px solid var(--brand);border-radius:50%;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .tick svg{display:block;margin:0 auto 14px;width:86px;height:86px}
+    .tick h3{text-align:center;margin:0 0 6px 0}
+    .tick p{text-align:center;margin:0;color:#6c6b69}
+
+    /* Subtile motion */
+    .fade-in{animation:fade .18s ease both}
+    @keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+  </style>
 </head>
 <body>
-    <div id="form-container">
-        <div id="seite1">
-            <div class="container">
-                <h2 class="section-heading">Allgemeine Informationen</h2>
-                <div class="form-group"><label for="name">Name</label><input type="text" id="name" placeholder="Max Mustermann"><div class="error-message" id="name-error"></div></div>
-                <div class="form-group"><label for="email">E-Mail</label><input type="email" id="email" placeholder="max.mustermann@example.com"><div class="error-message" id="email-error"></div></div>
-                <div class="form-group">
-                    <label>Wohnung / Apartment</label>
-                    <div class="apartment-picker" id="wohnung-picker">
-                        <input type="radio" id="w1" name="wohnung" value="La Maison"><label for="w1">La Maison</label>
-                        <input type="radio" id="w2" name="wohnung" value="Suite Maritim"><label for="w2">Suite Maritim</label>
-                        <input type="radio" id="w3" name="wohnung" value="Maisonette Beach"><label for="w3">Maisonette Beach</label>
-                        <input type="radio" id="w4" name="wohnung" value="Cottage & Garden"><label for="w4">Cottage & Garden</label>
-                        <input type="radio" id="w5" name="wohnung" value="Malibu L"><label for="w5">Malibu L</label>
-                        <input type="radio" id="w6" name="wohnung" value="Malibu S"><label for="w6">Malibu S</label>
-                    </div>
-                    <div class="error-message" id="wohnung-error"></div>
-                </div>
-                <button id="btn-to-page2" class="btn">Weiter zur Brötchenauswahl</button>
-            </div>
+  <div class="shell">
+    <div id="seite1" class="card fade-in">
+      <h2 class="section">Allgemeine Informationen</h2>
+      <p class="sub">Bitte fülle die Felder aus und wähle deine Wohnung.</p>
+      <div class="grid">
+        <div>
+          <label for="name">Name</label>
+          <input id="name" type="text" placeholder="Max Mustermann">
+          <div class="error" id="name-error"></div>
         </div>
-        <div id="seite2">
-             <div class="container">
-                <h2 class="section-heading">Ihre Bestellung</h2>
-                <div id="lieferbereich"></div>
-                <div class="error-message" id="bestellung-error"></div>
-                <button id="btn-add-day" class="btn btn-small" style="width: auto;">+ Weiteren Liefertag hinzufügen</button>
-                <div class="price-box">Gesamtpreis: <span id="gesamtpreis">0,00 €</span></div>
-                <div class="navi">
-                    <button id="btn-to-page1" class="btn btn-outline">Zurück</button>
-                    <button id="btn-submit" class="btn">Bestellung absenden</button>
-                </div>
-            </div>
+        <div>
+          <label for="email">E-Mail</label>
+          <input id="email" type="email" placeholder="max.mustermann@example.com" inputmode="email" autocomplete="email">
+          <div class="error" id="email-error"></div>
         </div>
+        <div>
+          <label>Wohnung / Apartment</label>
+          <div id="wohnung-picker" class="apts">
+            <input id="w1" name="wohnung" type="radio" value="La Maison"><label class="apt" for="w1">La Maison</label>
+            <input id="w2" name="wohnung" type="radio" value="Suite Maritim"><label class="apt" for="w2">Suite Maritim</label>
+            <input id="w3" name="wohnung" type="radio" value="Maisonette Beach"><label class="apt" for="w3">Maisonette Beach</label>
+            <input id="w4" name="wohnung" type="radio" value="Cottage & Garden"><label class="apt" for="w4">Cottage & Garden</label>
+            <input id="w5" name="wohnung" type="radio" value="Malibu L"><label class="apt" for="w5">Malibu L</label>
+            <input id="w6" name="wohnung" type="radio" value="Malibu S"><label class="apt" for="w6">Malibu S</label>
+          </div>
+          <div class="error" id="wohnung-error"></div>
+          <div class="hint">Du kannst später mehrere Liefertage mit Aufpreis hinzufügen.</div>
+        </div>
+        <div class="actions">
+          <button id="btn-to-page2" class="btn">Weiter zur Brötchenauswahl</button>
+        </div>
+      </div>
     </div>
-    <div id="success-container" style="display: none;">
-        <div id="success-message">
-            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
-                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-            </svg>
-            <h2 style="font-weight: 600;">Vielen Dank!</h2>
-            <p>Ihre Bestellung wurde erfolgreich übermittelt. Eine Bestätigung wurde an Ihre E-Mail-Adresse gesendet.</p>
-        </div>
+
+    <div id="seite2" class="card fade-in" style="display:none">
+      <h2 class="section">Ihre Bestellung</h2>
+      <div id="lieferbereich"></div>
+      <div class="pill">Tages-Aufpreis wird automatisch berechnet</div>
+      <div id="bestellung-error" class="error"></div>
+      <div style="margin-top:12px">
+        <button id="btn-add-day" class="btn alt" style="width:auto">+ Weiteren Liefertag hinzufügen</button>
+      </div>
+      <div class="price">Gesamtpreis: <span id="gesamtpreis">0,00 €</span></div>
+      <div class="actions">
+        <button id="btn-to-page1" class="btn alt">Zurück</button>
+        <button id="btn-submit" class="btn">Bestellung absenden</button>
+      </div>
     </div>
-    <div id="loading-overlay" style="display: none;"><div class="spinner"></div></div>
+  </div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbwMIN3aqq1-f9_5_Ud3d6V3xICUCD8hdFOBEYMtNn1ETPawsZg9uhHZvUNYdpnzNqMErw/exec'; // WICHTIG: Ersetzen!
-        
-        const produkte = { "Müslibrötchen": 1.50, "Roggenkrüsti": 0.99, "Fitnessbrötchen": 1.15, "Kürbiskernbrötchen": 1.20, "Dinkelbrötchen": 1.20, "Schnittbrötchen": 0.60, "Kraftkörnchen": 1.15, "Mohnbrötchen": 0.85, "Sesambrötchen": 0.85, "Morgengoldbrötchen": 0.95, "Kartoffelbrötchen": 1.05, "Kürbiskäsebrötchen": 1.60, "Käsebrötchen": 1.55, "Milchbrötchen": 1.00, "Rosinenbrötchen": 1.10, "Buttercroissant": 1.85, "Croissant": 1.85, "Schokoladencroissant": 2.10, "Laugenstange": 1.60, "Laugenbrötchen": 1.20, "Rosinenschnecke": 2.45, "Donut": 1.85, "Berliner": 1.80, "Mandelhörnchen": 2.80, "großes Kassler": 4.55, "Kraftkornbrot": 4.85, "Münsterländer": 4.50, "Fitnessbrot": 4.85, "Dinkelbrot": 4.55, "Steinofenbrot": 4.55, "Holzhacker": 4.85, "Hamburger Brot": 3.70, "Pottstuten": 4.50 };
-        const aufpreisWoche = 1.70;
-        const aufpreisWochenende = 2.20;
+  <div id="loading-overlay" class="overlay"><div class="spinner"></div></div>
 
-        function sendHeightToParent() { setTimeout(() => { parent.postMessage({ type: 'setHeight', height: document.body.scrollHeight }, '*'); }, 150); }
-        function showError(elementId, message) {
-            const errorEl = document.getElementById(elementId);
-            const inputEl = document.getElementById(elementId.replace('-error', ''));
-            errorEl.textContent = message;
-            errorEl.style.display = 'block';
-            if (inputEl) inputEl.classList.add('is-invalid');
-            if (elementId === 'wohnung-error') document.getElementById('wohnung-picker').classList.add('is-invalid');
-        }
-        function clearErrors() {
-            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-        }
-        function validateForm() {
-            clearErrors(); let isValid = true;
-            if (!document.getElementById('name').value.trim()) { showError('name-error', 'Bitte geben Sie Ihren Namen ein.'); isValid = false; }
-            const email = document.getElementById('email').value.trim();
-            if (!email) { showError('email-error', 'Bitte geben Sie Ihre E-Mail-Adresse ein.'); isValid = false;
-            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('email-error', 'Bitte geben Sie eine gültige E-Mail-Adresse ein.'); isValid = false; }
-            if (!document.querySelector('input[name="wohnung"]:checked')) { showError('wohnung-error', 'Bitte wählen Sie eine Wohnung aus.'); isValid = false; }
-            return isValid;
-        }
-        async function submitForm() {
-            if (!validateForm()) { sendHeightToParent(); return; };
-            const orderData = {
-                name: document.getElementById('name').value, email: document.getElementById('email').value,
-                wohnung: document.querySelector('input[name="wohnung"]:checked').value, bestellungen: [],
-                gesamtpreis: document.getElementById('gesamtpreis').textContent
-            };
-            let hasValidDay = false;
-            document.querySelectorAll('.delivery-day-block').forEach(tag => {
-                const datum = tag.querySelector('input[type=date]').value; if (!datum) return;
-                const items = [];
-                tag.querySelectorAll('.dynamic-row').forEach(row => {
-                    const sorte = row.querySelector('select').value; const menge = row.querySelector('input[type=number]').value;
-                    if (sorte && menge > 0) items.push({ sorte, menge });
-                });
-                if (items.length > 0) { hasValidDay = true; orderData.bestellungen.push({ datum, items }); }
-            });
-            if (!hasValidDay) { showError('bestellung-error', 'Ihre Bestellung ist leer. Bitte fügen Sie mindestens einen Artikel hinzu.'); sendHeightToParent(); return; }
-            document.getElementById('loading-overlay').style.display = 'flex';
-            try {
-                await fetch(googleAppScriptUrl, {
-                    method: 'POST', mode: 'no-cors', cache: 'no-cache', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData)
-                });
-                document.getElementById('form-container').style.display = 'none';
-                document.getElementById('success-container').style.display = 'flex';
-            } catch (error) {
-                console.error('Fehler beim Senden:', error); alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
-            } finally {
-                document.getElementById('loading-overlay').style.display = 'none';
-                sendHeightToParent();
-            }
-        }
-        function wechsleSeite(zielSeite) {
-            document.getElementById('seite1').style.display = (zielSeite === 'seite1') ? 'block' : 'none';
-            document.getElementById('seite2').style.display = (zielSeite === 'seite2') ? 'block' : 'none';
-            if (zielSeite === 'seite2' && document.getElementById('lieferbereich').childElementCount === 0) neuenLiefertagErstellen();
-            sendHeightToParent();
-        }
-        function neuenLiefertagErstellen() {
-            const tagContainer = document.createElement("div");
-            tagContainer.className = "delivery-day-block";
-            // NEU: HTML mit Labels für Datum und Überschriften für die Sortenliste
-            tagContainer.innerHTML = `
-                <div class="delivery-day-header">
-                    <div class="date-picker-group">
-                        <label>Datum</label>
-                        <input type="date"/>
-                    </div>
-                    <button class="remove-btn" data-action="remove-day" title="Diesen Liefertag entfernen">&times;</button>
-                </div>
-                <div class="dynamic-row-header">
-                    <div>Brötchensorte</div>
-                    <div>Menge</div>
-                </div>
-                <div class="sortenliste"></div>
-                <button class="btn btn-small" data-action="add-item">+ Sorte hinzufügen</button>`;
-            document.getElementById('lieferbereich').appendChild(tagContainer);
-            neueSorteHinzufuegen(tagContainer.querySelector('[data-action="add-item"]'));
-            sendHeightToParent();
-        }
-        function neueSorteHinzufuegen(addButton) {
-            const sortenliste = addButton.parentElement.querySelector('.sortenliste');
-            const row = document.createElement("div"); row.className = "dynamic-row";
-            let optionenHTML = '<option value="" disabled selected>Sorte wählen</option>';
-            for (const name of Object.keys(produkte)) { optionenHTML += `<option value="${name}">${name}</option>`; }
-            row.innerHTML = `<select>${optionenHTML}</select><input type="number" min="1" value="1"/><button class="remove-btn" data-action="remove-item" title="Diese Sorte entfernen">&times;</button>`;
-            sortenliste.appendChild(row);
-            updateGesamtpreis(); sendHeightToParent();
-        }
-        function updateGesamtpreis() {
-            let gesamt = 0;
-            document.querySelectorAll('.delivery-day-block').forEach(tag => {
-                const datumsInput = tag.querySelector('input[type=date]'); if (!datumsInput.value) return;
-                const istWochenende = (d => d.getDay() === 6 || d.getDay() === 0)(new Date(datumsInput.value));
-                const aufpreis = istWochenende ? aufpreisWochenende : aufpreisWoche;
-                let summeProTag = 0;
-                tag.querySelectorAll('.dynamic-row').forEach(row => {
-                    const sorte = row.querySelector('select').value; const menge = parseInt(row.querySelector('input[type=number]').value) || 0;
-                    summeProTag += (produkte[sorte] || 0) * menge;
-                });
-                if (summeProTag > 0) gesamt += summeProTag + aufpreis;
-            });
-            document.getElementById('gesamtpreis').textContent = gesamt.toFixed(2).replace('.', ',') + " €";
-        }
-        document.getElementById('btn-to-page2').addEventListener('click', () => { if (validateForm()) wechsleSeite('seite2'); else sendHeightToParent(); });
-        document.getElementById('btn-to-page1').addEventListener('click', () => wechsleSeite('seite1'));
-        document.getElementById('btn-add-day').addEventListener('click', neuenLiefertagErstellen);
-        document.getElementById('btn-submit').addEventListener('click', submitForm);
-        document.body.addEventListener('click', function(e) {
-            const button = e.target.closest('button[data-action]'); if (!button) return;
-            const action = button.dataset.action;
-            if (action === 'add-item') neueSorteHinzufuegen(button);
-            else if (action === 'remove-item') { button.closest('.dynamic-row').remove(); updateGesamtpreis(); sendHeightToParent(); }
-            else if (action === 'remove-day') { button.closest('.delivery-day-block').remove(); updateGesamtpreis(); sendHeightToParent(); }
+  <div id="success-container" class="success">
+    <div class="tick">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="25" fill="none" stroke="#2C8C5E" stroke-width="2"/>
+        <path d="M14.1 27.2l7.1 7.2 16.7-16.8" fill="none" stroke="#2C8C5E" stroke-width="4"/>
+      </svg>
+      <h3>Vielen Dank!</h3>
+      <p>Wir haben deine Bestellung erhalten. Eine Bestätigung ist per E-Mail unterwegs.</p>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cfg = window.BROETCHENFORM_CONFIG;
+
+    // === Preise & Aufpreise (wie bei dir, oben leicht änderbar im Backend auch validiert) ===
+    const produkte = { "Müslibrötchen": 1.50, "Roggenkrüsti": 0.99, "Fitnessbrötchen": 1.15, "Kürbiskernbrötchen": 1.20, "Dinkelbrötchen": 1.20, "Schnittbrötchen": 0.60, "Kraftkörnchen": 1.15, "Mohnbrötchen": 0.85, "Sesambrötchen": 0.85, "Morgengoldbrötchen": 0.95, "Kartoffelbrötchen": 1.05, "Kürbiskäsebrötchen": 1.60, "Käsebrötchen": 1.55, "Milchbrötchen": 1.00, "Rosinenbrötchen": 1.10, "Buttercroissant": 1.85, "Croissant": 1.85, "Schokoladencroissant": 2.10, "Laugenstange": 1.60, "Laugenbrötchen": 1.20, "Rosinenschnecke": 2.45, "Donut": 1.85, "Berliner": 1.80, "Mandelhörnchen": 2.80, "großes Kassler": 4.55, "Kraftkornbrot": 4.85, "Münsterländer": 4.50, "Fitnessbrot": 4.85, "Dinkelbrot": 4.55, "Steinofenbrot": 4.55, "Holzhacker": 4.85, "Hamburger Brot": 3.70, "Pottstuten": 4.50 };
+    const aufpreisWoche = 1.70;        // Mo–Fr
+    const aufpreisWochenende = 2.20;   // Sa/So
+
+    const s1 = document.getElementById('seite1');
+    const s2 = document.getElementById('seite2');
+    const lieferbereich = document.getElementById('lieferbereich');
+
+    function sendHeightToParent(){ setTimeout(()=>{ parent.postMessage({type:'setHeight',height:document.body.scrollHeight},'*'); },150); }
+
+    function showErr(id,msg){
+      const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block';
+      if(id==='wohnung-error') document.getElementById('wohnung-picker').classList.add('invalid');
+    }
+    function clearErrs(){
+      document.querySelectorAll('.error').forEach(e=>e.style.display='none');
+      document.getElementById('wohnung-picker').classList.remove('invalid');
+      document.querySelectorAll('.is-invalid').forEach(e=>e.classList.remove('is-invalid'));
+    }
+    function validatePage1(){
+      clearErrs(); let ok = true;
+      if(!document.getElementById('name').value.trim()){ showErr('name-error','Bitte gib deinen Namen ein.'); ok=false; }
+      const email = document.getElementById('email').value.trim();
+      if(!email){ showErr('email-error','Bitte gib deine E-Mail ein.'); ok=false; }
+      else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr('email-error','Bitte gültige E-Mail eingeben.'); ok=false; }
+      if(!document.querySelector('input[name="wohnung"]:checked')){ showErr('wohnung-error','Bitte Wohnung wählen.'); ok=false; }
+      return ok;
+    }
+
+    function wechsleSeite(z){
+      s1.style.display = (z==='s1')?'block':'none';
+      s2.style.display = (z==='s2')?'block':'none';
+      if(z==='s2' && !lieferbereich.childElementCount) neuenLiefertag();
+      sendHeightToParent();
+    }
+
+    function optionenHTMLFor(date){
+      const d = date ? new Date(date) : null;
+      const isWE = d ? (d.getDay()===6 || d.getDay()===0) : false;
+      let html = '<option value="" disabled selected>Sorte wählen</option>';
+      for(const name of Object.keys(produkte)){
+        if(cfg.hideMueslibroetchenOnWeekend && isWE && name==='Müslibrötchen') continue;
+        html += `<option value="${name}">${name}</option>`;
+      }
+      return html;
+    }
+
+    function neuenLiefertag(){
+      const day = document.createElement('div'); day.className='day fade-in';
+      day.innerHTML = `
+        <div class="dayhead">
+          <div style="flex:1">
+            <label>Datum</label>
+            <input type="date" />
+            <div class="hint">Aufpreis wird automatisch berücksichtigt</div>
+          </div>
+          <button class="dayrm" title="Tag entfernen">&times;</button>
+        </div>
+        <div class="dynhdr"><div>Brötchensorte</div><div>Menge</div><div></div></div>
+        <div class="sorten"></div>
+        <button class="btn alt" data-add style="width:auto;margin-top:10px">+ Sorte hinzufügen</button>
+      `;
+      lieferbereich.appendChild(day);
+      addSorte(day.querySelector('[data-add]')); // erste Zeile
+      sendHeightToParent();
+    }
+
+    function addSorte(btn){
+      const wrap = btn.closest('.day').querySelector('.sorten');
+      const row = document.createElement('div'); row.className='dynrow fade-in';
+      const date = btn.closest('.day').querySelector('input[type="date"]').value || '';
+      row.innerHTML = `
+        <select>${optionenHTMLFor(date)}</select>
+        <input type="number" min="1" value="1" />
+        <button class="remove" title="Sorte entfernen">&times;</button>
+      `;
+      wrap.appendChild(row);
+      updateTotal();
+      sendHeightToParent();
+    }
+
+    function updateTotal(){
+      let total = 0;
+      document.querySelectorAll('.day').forEach(day=>{
+        const dateStr = day.querySelector('input[type="date"]').value;
+        if(!dateStr) return;
+        const d = new Date(dateStr);
+        const isWE = (d.getDay()===6 || d.getDay()===0);
+        const aufpreis = isWE ? aufpreisWochenende : aufpreisWoche;
+        let sum = 0;
+        day.querySelectorAll('.dynrow').forEach(r=>{
+          const s = r.querySelector('select').value;
+          const m = parseInt(r.querySelector('input[type="number"]').value) || 0;
+          sum += (produkte[s]||0) * m;
         });
-        document.body.addEventListener('change', e => { if (e.target.matches('input[type=number], select, input[type=date]')) updateGesamtpreis(); });
-        new MutationObserver(sendHeightToParent).observe(document.body, { childList: true, subtree: true, attributes: true });
+        if(sum>0) total += sum + aufpreis;
+      });
+      document.getElementById('gesamtpreis').textContent = total.toFixed(2).replace('.',',')+' €';
+    }
+
+    // Events
+    document.getElementById('btn-to-page2').addEventListener('click',()=>{ if(validatePage1()) wechsleSeite('s2'); else sendHeightToParent(); });
+    document.getElementById('btn-to-page1').addEventListener('click',()=>wechsleSeite('s1'));
+    document.getElementById('btn-add-day').addEventListener('click',neuenLiefertag);
+    document.body.addEventListener('click',e=>{
+      const t = e.target;
+      if(t.matches('[data-add]')) addSorte(t);
+      if(t.matches('.remove')){ t.closest('.dynrow').remove(); updateTotal(); sendHeightToParent(); }
+      if(t.matches('.dayrm')){ t.closest('.day').remove(); updateTotal(); sendHeightToParent(); }
     });
-    </script>
+    document.body.addEventListener('change',e=>{
+      if(e.target.matches('input[type="number"], select')) updateTotal();
+      if(e.target.matches('input[type="date"]')){
+        // Neu-Render der Optionen (Müslibrötchen an WE ausblenden)
+        const day = e.target.closest('.day');
+        day.querySelectorAll('select').forEach(sel=>{
+          const prev = sel.value;
+          sel.innerHTML = optionenHTMLFor(e.target.value);
+          if([...sel.options].some(o=>o.value===prev)) sel.value = prev;
+        });
+        updateTotal();
+      }
+    });
+
+    async function submitForm(){
+      clearErrs();
+      // Build payload
+      const payload = {
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        wohnung: (document.querySelector('input[name="wohnung"]:checked')||{}).value || '',
+        bestellungen: [],
+        gesamtpreis_client: document.getElementById('gesamtpreis').textContent
+      };
+      if(!validatePage1()) return;
+
+      let hasDay=false;
+      document.querySelectorAll('.day').forEach(day=>{
+        const date = day.querySelector('input[type="date"]').value;
+        if(!date) return;
+        const items = [];
+        day.querySelectorAll('.dynrow').forEach(r=>{
+          const s = r.querySelector('select').value;
+          const m = parseInt(r.querySelector('input[type="number"]').value)||0;
+          if(s && m>0) items.push({sorte:s, menge:m});
+        });
+        if(items.length){ hasDay=true; payload.bestellungen.push({datum:date, items}); }
+      });
+      if(!hasDay){ const e=document.getElementById('bestellung-error'); e.textContent='Ihre Bestellung ist leer. Bitte fügen Sie mindestens eine Sorte hinzu.'; e.style.display='block'; sendHeightToParent(); return; }
+
+      // CORS: Apps Script akzeptiert text/plain -> kein Preflight
+      const overlay = document.getElementById('loading-overlay'); overlay.style.display='flex';
+      try{
+        const res = await fetch(cfg.googleAppScriptUrl, {
+          method:'POST',
+          headers: {'Content-Type':'text/plain;charset=utf-8'},
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if(data.ok){
+          document.getElementById('seite1').style.display='none';
+          document.getElementById('seite2').style.display='none';
+          document.getElementById('success-container').style.display='flex';
+        }else{
+          alert('Fehler: '+(data.msg||'Unbekannt'));
+        }
+      }catch(err){
+        console.error(err); alert('Es ist ein Fehler aufgetreten. Bitte später erneut versuchen.');
+      }finally{
+        overlay.style.display='none'; sendHeightToParent();
+      }
+    }
+    document.getElementById('btn-submit').addEventListener('click',submitForm);
+
+    // Height sync for Wix iFrame
+    new MutationObserver(sendHeightToParent).observe(document.body,{childList:true,subtree:true,attributes:true});
+  });
+  </script>
 </body>
 </html>
