@@ -1,4 +1,3 @@
-<!-- index.html  —  Brötchen-Bestellung (modern, smooth) -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -9,7 +8,6 @@
   <!-- CONFIG (Frontend) -->
   <script>
     window.BROETCHENFORM_CONFIG = {
-      // Deine veröffentlichte Web-App-URL aus Apps Script (Deploy -> Web App)
       googleAppScriptUrl: 'https://script.google.com/macros/s/AKfycbwMIN3aqq1-f9_5_Ud3d6V3xICUCD8hdFOBEYMtNn1ETPawsZg9uhHZvUNYdpnzNqMErw/exec',
       hideMueslibroetchenOnWeekend: true
     };
@@ -21,26 +19,23 @@
 
   <style>
     :root{
-      --bg:#DFDCD7;                 /* deine Site-Farbe */
-      --card:#FFFFFFF2;             /* leicht glasig */
-      --text:#292826;
-      --brand:#292826;
-      --border:#E2E2E2;
-      --shadow:0 15px 40px rgba(0,0,0,.10);
-      --danger:#D9534F;
-      --ok:#2C8C5E;
+      --bg:#DFDCD7; --card:#FFFFFFF2; --text:#292826; --brand:#292826;
+      --border:#E2E2E2; --shadow:0 15px 40px rgba(0,0,0,.10);
+      --danger:#D9534F; --ok:#2C8C5E;
     }
     *{box-sizing:border-box}
     html{font-size:16px}
     body{
-      margin:0; color:var(--text); background:radial-gradient(1200px 600px at 20% -10%, #f1f0ee 0%, var(--bg) 60%, #d8d5cf 100%);
+      margin:0; color:var(--text);
+      background:radial-gradient(1200px 600px at 20% -10%, #f1f0ee 0%, var(--bg) 60%, #d8d5cf 100%);
       font-family:'Inter',system-ui,Segoe UI,Arial,sans-serif;
       min-height:100svh; padding:24px;
     }
     .shell{max-width:760px;margin:0 auto}
     .card{
       background:var(--card); border:1px solid var(--border); border-radius:20px; padding:26px;
-      box-shadow:var(--shadow); backdrop-filter:saturate(180%) blur(6px); transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+      box-shadow:var(--shadow); backdrop-filter:saturate(180%) blur(6px);
+      transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
     }
     .card:hover{transform:translateY(-1px)}
     h2.section{font-size:1.6rem;margin:0 0 14px 0;font-weight:700;letter-spacing:.2px}
@@ -49,17 +44,13 @@
     .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media (max-width:768px){.row{grid-template-columns:1fr}}
     label{font-weight:600;font-size:.95rem;margin:6px 0 6px 2px;display:block}
-    input,select,button{
-      font:inherit
-    }
+    input,select,button{font:inherit}
     input,select{
       width:100%; background:#fff; border:1px solid var(--border); border-radius:12px; padding:.9rem .95rem;
       outline:none; transition:border-color .15s ease, box-shadow .15s ease, transform .05s ease;
       box-shadow:inset 0 0 0 rgba(0,0,0,0);
     }
-    input:focus,select:focus{
-      border-color:#bcbcbc; box-shadow:0 0 0 4px #00000010;
-    }
+    input:focus,select:focus{border-color:#bcbcbc; box-shadow:0 0 0 4px #00000010}
     input.is-invalid,select.is-invalid{border-color:var(--danger); box-shadow:0 0 0 4px #D9534F20}
     .hint{font-size:.82rem;color:#7b7a79;margin-top:6px}
     .error{font-size:.86rem;color:var(--danger);display:none;margin-top:6px}
@@ -90,16 +81,12 @@
     .remove{border:none;background:transparent;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
     .badge{background:#f3f3f2;border:1px solid var(--border);border-radius:999px;padding:.35rem .6rem;font-size:.83rem}
     .ok{color:var(--ok)}
-    .overlay, .success{
-      position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#ffffffee;z-index:30
-    }
+    .overlay,.success{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#ffffffee;z-index:30}
     .spinner{width:52px;height:52px;border:5px solid #eee;border-top:5px solid var(--brand);border-radius:50%;animation:spin 1s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     .tick svg{display:block;margin:0 auto 14px;width:86px;height:86px}
     .tick h3{text-align:center;margin:0 0 6px 0}
     .tick p{text-align:center;margin:0;color:#6c6b69}
-
-    /* Subtile motion */
     .fade-in{animation:fade .18s ease both}
     @keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
   </style>
@@ -171,11 +158,9 @@
   <script>
   document.addEventListener('DOMContentLoaded', () => {
     const cfg = window.BROETCHENFORM_CONFIG;
-
-    // === Preise & Aufpreise (wie bei dir, oben leicht änderbar im Backend auch validiert) ===
     const produkte = { "Müslibrötchen": 1.50, "Roggenkrüsti": 0.99, "Fitnessbrötchen": 1.15, "Kürbiskernbrötchen": 1.20, "Dinkelbrötchen": 1.20, "Schnittbrötchen": 0.60, "Kraftkörnchen": 1.15, "Mohnbrötchen": 0.85, "Sesambrötchen": 0.85, "Morgengoldbrötchen": 0.95, "Kartoffelbrötchen": 1.05, "Kürbiskäsebrötchen": 1.60, "Käsebrötchen": 1.55, "Milchbrötchen": 1.00, "Rosinenbrötchen": 1.10, "Buttercroissant": 1.85, "Croissant": 1.85, "Schokoladencroissant": 2.10, "Laugenstange": 1.60, "Laugenbrötchen": 1.20, "Rosinenschnecke": 2.45, "Donut": 1.85, "Berliner": 1.80, "Mandelhörnchen": 2.80, "großes Kassler": 4.55, "Kraftkornbrot": 4.85, "Münsterländer": 4.50, "Fitnessbrot": 4.85, "Dinkelbrot": 4.55, "Steinofenbrot": 4.55, "Holzhacker": 4.85, "Hamburger Brot": 3.70, "Pottstuten": 4.50 };
-    const aufpreisWoche = 1.70;        // Mo–Fr
-    const aufpreisWochenende = 2.20;   // Sa/So
+    const aufpreisWoche = 1.70;
+    const aufpreisWochenende = 2.20;
 
     const s1 = document.getElementById('seite1');
     const s2 = document.getElementById('seite2');
@@ -236,7 +221,7 @@
         <button class="btn alt" data-add style="width:auto;margin-top:10px">+ Sorte hinzufügen</button>
       `;
       lieferbereich.appendChild(day);
-      addSorte(day.querySelector('[data-add]')); // erste Zeile
+      addSorte(day.querySelector('[data-add]'));
       sendHeightToParent();
     }
 
@@ -273,7 +258,6 @@
       document.getElementById('gesamtpreis').textContent = total.toFixed(2).replace('.',',')+' €';
     }
 
-    // Events
     document.getElementById('btn-to-page2').addEventListener('click',()=>{ if(validatePage1()) wechsleSeite('s2'); else sendHeightToParent(); });
     document.getElementById('btn-to-page1').addEventListener('click',()=>wechsleSeite('s1'));
     document.getElementById('btn-add-day').addEventListener('click',neuenLiefertag);
@@ -286,7 +270,6 @@
     document.body.addEventListener('change',e=>{
       if(e.target.matches('input[type="number"], select')) updateTotal();
       if(e.target.matches('input[type="date"]')){
-        // Neu-Render der Optionen (Müslibrötchen an WE ausblenden)
         const day = e.target.closest('.day');
         day.querySelectorAll('select').forEach(sel=>{
           const prev = sel.value;
@@ -299,7 +282,6 @@
 
     async function submitForm(){
       clearErrs();
-      // Build payload
       const payload = {
         name: document.getElementById('name').value.trim(),
         email: document.getElementById('email').value.trim(),
@@ -321,33 +303,33 @@
         });
         if(items.length){ hasDay=true; payload.bestellungen.push({datum:date, items}); }
       });
-      if(!hasDay){ const e=document.getElementById('bestellung-error'); e.textContent='Ihre Bestellung ist leer. Bitte fügen Sie mindestens eine Sorte hinzu.'; e.style.display='block'; sendHeightToParent(); return; }
+      if(!hasDay){
+        const e=document.getElementById('bestellung-error');
+        e.textContent='Ihre Bestellung ist leer. Bitte fügen Sie mindestens eine Sorte hinzu.'; e.style.display='block';
+        sendHeightToParent(); return;
+      }
 
-      // CORS: Apps Script akzeptiert text/plain -> kein Preflight
       const overlay = document.getElementById('loading-overlay'); overlay.style.display='flex';
       try{
-        const res = await fetch(cfg.googleAppScriptUrl, {
+        // Kein CORS-Ärger: wir schicken "opaque" (Browser kann Antwort nicht lesen, Server bekommt alles)
+        await fetch(cfg.googleAppScriptUrl, {
           method:'POST',
-          headers: {'Content-Type':'text/plain;charset=utf-8'},
-          body: JSON.stringify(payload),
+          mode:'no-cors',
+          headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body: JSON.stringify(payload)
         });
-        const data = await res.json();
-        if(data.ok){
-          document.getElementById('seite1').style.display='none';
-          document.getElementById('seite2').style.display='none';
-          document.getElementById('success-container').style.display='flex';
-        }else{
-          alert('Fehler: '+(data.msg||'Unbekannt'));
-        }
+        document.getElementById('seite1').style.display='none';
+        document.getElementById('seite2').style.display='none';
+        document.getElementById('success-container').style.display='flex';
       }catch(err){
-        console.error(err); alert('Es ist ein Fehler aufgetreten. Bitte später erneut versuchen.');
+        console.error(err);
+        alert('Es ist ein Fehler aufgetreten. Bitte später erneut versuchen.');
       }finally{
         overlay.style.display='none'; sendHeightToParent();
       }
     }
     document.getElementById('btn-submit').addEventListener('click',submitForm);
 
-    // Height sync for Wix iFrame
     new MutationObserver(sendHeightToParent).observe(document.body,{childList:true,subtree:true,attributes:true});
   });
   </script>
