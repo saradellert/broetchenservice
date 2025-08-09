@@ -36,6 +36,8 @@
       --border:#E2E2E2; --shadow:0 15px 40px rgba(0,0,0,.10);
       --danger:#D9534F; --ok:#2C8C5E; --muted:#6a6a69;
       --radius-card:24px; --radius-input:16px; --radius-btn:16px;
+      --ctrl-pad: .9rem .95rem;     /* Desktop Input Padding */
+      --gap: 14px;
     }
     *{box-sizing:border-box}
     html{font-size:16px}
@@ -52,12 +54,11 @@
     }
     h2.section{font-size:1.6rem;margin:0 0 14px;font-weight:700}
     p.sub{margin:.25rem 0 1.25rem;color:var(--muted)}
-    .grid{display:grid;gap:14px}
+    .grid{display:grid;gap:var(--gap)}
     label{font-weight:600;font-size:.95rem;margin:6px 0 6px 2px;display:block}
     input,select{
-      width:100%; background:#fff; border:1px solid var(--border); border-radius:var(--radius-input); padding:.9rem .95rem; outline:none;
-      font-family:inherit;
-      font-size:1rem;
+      width:100%; background:#fff; border:1px solid var(--border); border-radius:var(--radius-input); padding:var(--ctrl-pad); outline:none;
+      font-family:inherit; font-size:1rem;
     }
     input[type="date"]{ font-family:inherit; }
     input:focus,select:focus{border-color:#bcbcbc; box-shadow:0 0 0 4px #00000010}
@@ -74,9 +75,9 @@
       border:2px solid var(--brand); background:var(--brand); color:#fff; padding:.95rem 1.2rem; border-radius:var(--radius-btn);
       cursor:pointer; font-weight:700; width:100%;
     }
-    .btn.alt{background:#fff;color:var(--brand)}              /* Nur „Zurück“ bekommt alt */
-    .btn.pill{border-radius:100px}                             /* Runde Aktionsbuttons */
-    .btn.sm{padding:.45rem .8rem; font-size:.88rem; width:auto}/* KLEINERE Buttons */
+    .btn.alt{background:#fff;color:var(--brand)}
+    .btn.pill{border-radius:100px}
+    .btn.sm{padding:.5rem .9rem; font-size:.9rem; width:auto}
     .btn:disabled{opacity:.6; cursor:not-allowed}
 
     .muted{color:var(--muted);font-size:.9rem}
@@ -85,6 +86,7 @@
 
     /* Liefertag-Container */
     .day{
+      position:relative;
       border:1px solid var(--border);
       border-radius:20px;
       padding:18px;
@@ -93,11 +95,17 @@
     }
     .dayhead{
       display:flex;align-items:flex-end;gap:10px;justify-content:space-between;
-      border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:12px
+      border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:12px;
+      padding-right:42px; /* Platz für X */
     }
-    .dayrm{border:none;background:transparent;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
-    .dynhdr{display:grid;grid-template-columns:1fr 90px 40px;gap:10px;font-size:.8rem;color:#81807d;margin:6px 4px 6px 4px}
-    .dynrow{display:grid;grid-template-columns:1fr 90px 40px;gap:10px;align-items:center;margin-top:6px}
+    .dayrm{
+      position:absolute; top:10px; right:10px;
+      border:none;background:#fff; color:var(--danger);
+      width:32px;height:32px;border-radius:999px; line-height:30px; font-size:18px; cursor:pointer;
+      border:1px solid #f0d6d5;
+    }
+    .dynhdr{display:grid;grid-template-columns:1fr 90px 32px;gap:10px;font-size:.8rem;color:#81807d;margin:6px 4px 6px 4px}
+    .dynrow{display:grid;grid-template-columns:1fr 90px 32px;gap:10px;align-items:center;margin-top:6px}
     .remove{border:none;background:transparent;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
     .dayfoot{margin-top:12px}
     .dayfoot .cost{color:var(--muted);font-size:.9rem}
@@ -123,6 +131,24 @@
     .tick{display:flex;flex-direction:column;align-items:center;gap:10px}
     .tick svg{width:84px;height:84px; animation:pop .35s ease-out both}
     @keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+
+    /* ---------- MOBILE TUNING ---------- */
+    @media (max-width: 600px){
+      html{font-size:15px}
+      body{padding:18px}
+      .card{padding:18px}
+      :root{ --gap: 10px; --ctrl-pad: .65rem .75rem; }
+      label{font-size:.9rem}
+      input,select{font-size:.95rem}
+      .dynhdr{grid-template-columns:1fr 72px 28px; gap:8px; font-size:.78rem}
+      .dynrow{grid-template-columns:1fr 72px 28px; gap:8px}
+      .day{padding:14px}
+      .dayhead{margin-bottom:10px; padding-bottom:8px; padding-right:40px}
+      .dayrm{top:8px; right:8px; width:28px; height:28px; line-height:26px; font-size:16px}
+      .btn.sm{width:100%}        /* kleine Buttons full-width für besseren Tap */
+      .price{font-size:1.6rem}
+      .subprice{font-size:.92rem}
+    }
   </style>
 </head>
 <body>
@@ -250,9 +276,8 @@
         <div class="dayhead">
           <div style="flex:1">
             <label>Datum</label>
-            <input type="date" />
+            <input type="date" placeholder="dd.mm.yyyy" />
           </div>
-          <button class="dayrm" title="Tag entfernen">&times;</button>
         </div>
 
         <div class="dynhdr"><div>Brötchensorte</div><div>Menge</div><div></div></div>
@@ -261,6 +286,7 @@
         <div class="dayfoot"><span class="cost" data-cost>Lieferkosten werden berechnet</span></div>
 
         <button class="btn pill sm" data-add style="margin-top:12px">+ Sorte hinzufügen</button>
+        <button class="dayrm" title="Tag entfernen">&times;</button>
       `;
       lieferbereich.appendChild(day);
       addSorte(day.querySelector('[data-add]'));
@@ -364,7 +390,7 @@
 
       const overlay = document.getElementById('loading-overlay'); overlay.style.display='flex';
       try{
-        // === CORS-FIX: simple request ohne Preflight, keine Antwort lesen ===
+        // CORS-sicher: Simple Request, keine Antwort lesen
         await fetch(cfg.googleAppScriptUrl, {
           method: 'POST',
           mode: 'no-cors',
@@ -372,7 +398,6 @@
           body: JSON.stringify(payload)
         });
 
-        // Erfolg anzeigen (Response ist "opaque", aber Server verarbeitet trotzdem)
         document.getElementById('seite1').style.display='none';
         document.getElementById('seite2').style.display='none';
         document.getElementById('success-container').style.display='flex';
