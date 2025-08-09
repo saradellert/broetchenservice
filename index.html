@@ -13,7 +13,6 @@
     }
     window.addEventListener("load", sendHeight);
     window.addEventListener("resize", sendHeight);
-    // auf DOM-Änderungen reagieren (Liefertag hinzufügen/entfernen etc.)
     new MutationObserver(sendHeight).observe(document.body, {
       childList: true, subtree: true, attributes: true
     });
@@ -36,6 +35,7 @@
       --bg:#DFDCD7; --card:#FFFFFFF2; --text:#292826; --brand:#292826;
       --border:#E2E2E2; --shadow:0 15px 40px rgba(0,0,0,.10);
       --danger:#D9534F; --ok:#2C8C5E; --muted:#6a6a69;
+      --radius-card:24px; --radius-input:16px; --radius-btn:16px;
     }
     *{box-sizing:border-box}
     html{font-size:16px}
@@ -47,14 +47,19 @@
     }
     .shell{max-width:760px;margin:0 auto}
     .card{
-      background:var(--card); border:1px solid var(--border); border-radius:20px; padding:26px;
+      background:var(--card); border:1px solid var(--border); border-radius:var(--radius-card); padding:28px;
       box-shadow:var(--shadow); backdrop-filter:saturate(180%) blur(6px);
     }
     h2.section{font-size:1.6rem;margin:0 0 14px;font-weight:700}
     p.sub{margin:.25rem 0 1.25rem;color:var(--muted)}
     .grid{display:grid;gap:14px}
     label{font-weight:600;font-size:.95rem;margin:6px 0 6px 2px;display:block}
-    input,select{width:100%; background:#fff; border:1px solid var(--border); border-radius:12px; padding:.9rem .95rem; outline:none}
+    input,select{
+      width:100%; background:#fff; border:1px solid var(--border); border-radius:var(--radius-input); padding:.9rem .95rem; outline:none;
+      font-family:inherit; /* Datum-Picker übernimmt Inter */
+      font-size:1rem;
+    }
+    input[type="date"]{ font-family:inherit; }
     input:focus,select:focus{border-color:#bcbcbc; box-shadow:0 0 0 4px #00000010}
     input.is-invalid,select.is-invalid{border-color:var(--danger); box-shadow:0 0 0 4px #D9534F20}
     .error{font-size:.86rem;color:var(--danger);display:none;margin-top:6px}
@@ -63,25 +68,40 @@
     .apt{border:1px solid var(--border); border-radius:999px; padding:.9rem 1rem; text-align:center; cursor:pointer; font-weight:600; background:#fff}
     .apts input:checked + .apt{background:var(--brand); color:#fff; border-color:var(--brand)}
     .apts.invalid .apt{border-color:var(--danger)}
-    .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;margin-top:18px}
-    .btn{border:2px solid var(--brand); background:var(--brand); color:#fff; padding:.95rem 1.2rem; border-radius:12px; cursor:pointer; font-weight:700; width:100%}
-    .btn.alt{background:#fff;color:var(--brand)}
+
+    .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;margin-top:22px}
+    .btn{
+      border:2px solid var(--brand); background:var(--brand); color:#fff; padding:.95rem 1.2rem; border-radius:var(--radius-btn);
+      cursor:pointer; font-weight:700; width:100%;
+    }
+    .btn.alt{background:#fff;color:var(--brand)}              /* Nur „Zurück“ bekommt alt */
+    .btn.pill{border-radius:100px}                             /* Runde Aktionsbuttons */
+    .btn:disabled{opacity:.6; cursor:not-allowed}
+
     .muted{color:var(--muted);font-size:.9rem}
-    .price{font-weight:800;font-size:1.6rem;margin:14px 0;color:var(--brand)}
-    .subprice{color:var(--muted);font-size:.95rem;margin-top:-6px}
-    .day{border:1px dashed var(--border);border-radius:16px;padding:14px;margin:10px 0 16px;background:#fff}
-    .dayhead{display:flex;align-items:flex-end;gap:10px;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px}
+    .price{font-weight:800;font-size:1.8rem;margin:18px 0 8px;color:var(--brand)}
+    .subprice{color:var(--muted);font-size:.95rem;margin:0 0 22px} /* mehr spacing unten */
+
+    /* Liefertag-Container – einheitlich, keine dashed border */
+    .day{
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:18px;
+      margin:12px 0 18px;
+      background:#fff;
+    }
+    .dayhead{
+      display:flex;align-items:flex-end;gap:10px;justify-content:space-between;
+      border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:12px
+    }
     .dayrm{border:none;background:transparent;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
-    .dynhdr{display:grid;grid-template-columns:1fr 90px 40px;gap:10px;font-size:.8rem;color:#81807d;margin:6px 4px 0 4px}
+    .dynhdr{display:grid;grid-template-columns:1fr 90px 40px;gap:10px;font-size:.8rem;color:#81807d;margin:6px 4px 6px 4px}
     .dynrow{display:grid;grid-template-columns:1fr 90px 40px;gap:10px;align-items:center;margin-top:6px}
     .remove{border:none;background:transparent;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
-    .badge{background:#f3f3f2;border:1px solid var(--border);border-radius:999px;padding:.25rem .5rem;font-size:.82rem;color:var(--muted)}
-    .overlay,.success{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#ffffffee;z-index:30}
-    .spinner{width:52px;height:52px;border:5px solid #eee;border-top:5px solid var(--brand);border-radius:50%;animation:spin 1s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .tick svg{display:block;margin:0 auto 14px;width:86px;height:86px}
-    .tick h3{text-align:center;margin:0 0 6px}
-    .tick p{text-align:center;margin:0;color:var(--muted)}
+
+    /* Dezenter „Lieferkosten“-Hinweis unten im Liefertag */
+    .dayfoot{margin-top:12px}
+    .dayfoot .cost{color:var(--muted);font-size:.9rem}
   </style>
 </head>
 <body>
@@ -124,11 +144,14 @@
       <h2 class="section">Ihre Bestellung</h2>
       <div id="lieferbereich"></div>
       <div id="bestellung-error" class="error"></div>
+
       <div style="margin-top:12px">
-        <button id="btn-add-day" class="btn alt" style="width:auto">+ Weiteren Liefertag hinzufügen</button>
+        <button id="btn-add-day" class="btn pill" style="width:auto">+ Weiteren Liefertag hinzufügen</button>
       </div>
+
       <div class="price">Gesamtpreis: <span id="gesamtpreis">0,00 €</span></div>
-      <div class="subprice" id="lieferkostenHinweis" aria-live="polite">davon Lieferpauschalen: 0,00 €</div>
+      <div class="subprice" id="lieferkostenHinweis" aria-live="polite">davon Lieferkosten: 0,00 €</div>
+
       <div class="actions">
         <button id="btn-to-page1" class="btn alt">Zurück</button>
         <button id="btn-submit" class="btn">Bestellung absenden</button>
@@ -161,7 +184,6 @@
     const s1 = document.getElementById('seite1');
     const s2 = document.getElementById('seite2');
     const lieferbereich = document.getElementById('lieferbereich');
-    const lieferHinweis = document.getElementById('lieferkostenHinweis');
 
     function showErr(id,msg){
       const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block';
@@ -208,13 +230,16 @@
           <div style="flex:1">
             <label>Datum</label>
             <input type="date" />
-            <div class="badge" data-badge>Lieferpauschale wird berechnet</div>
           </div>
           <button class="dayrm" title="Tag entfernen">&times;</button>
         </div>
+
         <div class="dynhdr"><div>Brötchensorte</div><div>Menge</div><div></div></div>
         <div class="sorten"></div>
-        <button class="btn alt" data-add style="width:auto;margin-top:10px">+ Sorte hinzufügen</button>
+
+        <div class="dayfoot"><span class="cost" data-cost>Lieferkosten werden berechnet</span></div>
+
+        <button class="btn pill" data-add style="width:auto;margin-top:12px">+ Sorte hinzufügen</button>
       `;
       lieferbereich.appendChild(day);
       addSorte(day.querySelector('[data-add]'));
@@ -242,12 +267,15 @@
       let lieferSum = 0;
       document.querySelectorAll('.day').forEach(day=>{
         const dateStr = day.querySelector('input[type="date"]').value;
-        const badge = day.querySelector('[data-badge]');
-        if(!dateStr){ if(badge) badge.textContent = 'Lieferpauschale wird berechnet'; return; }
+        const costEl = day.querySelector('[data-cost]');
+        if(!dateStr){
+          if(costEl) costEl.textContent = 'Lieferkosten werden berechnet';
+          return;
+        }
         const d = new Date(dateStr);
         const isWE = (d.getDay()===6 || d.getDay()===0);
         const aufpreis = isWE ? aufpreisWochenende : aufpreisWoche;
-        if(badge) badge.textContent = `Lieferpauschale +${euro(aufpreis)}`;
+        if(costEl) costEl.textContent = `Lieferkosten +${euro(aufpreis)}`;
 
         let sum = 0;
         day.querySelectorAll('.dynrow').forEach(r=>{
@@ -258,7 +286,7 @@
         if(sum>0){ total += sum + aufpreis; lieferSum += aufpreis; }
       });
       document.getElementById('gesamtpreis').textContent = euro(total);
-      document.getElementById('lieferkostenHinweis').textContent = `davon Lieferpauschalen: ${euro(lieferSum)}`;
+      document.getElementById('lieferkostenHinweis').textContent = `davon Lieferkosten: ${euro(lieferSum)}`;
     }
 
     // Events
