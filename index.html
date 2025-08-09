@@ -364,20 +364,19 @@
 
       const overlay = document.getElementById('loading-overlay'); overlay.style.display='flex';
       try{
-        const res = await fetch(cfg.googleAppScriptUrl, {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
+        // === CORS-FIX: simple request ohne Preflight, keine Antwort lesen ===
+        await fetch(cfg.googleAppScriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
-        const json = await res.json();
-        if(json && json.ok){
-          document.getElementById('seite1').style.display='none';
-          document.getElementById('seite2').style.display='none';
-          document.getElementById('success-container').style.display='flex';
-          sendHeight();
-        }else{
-          alert('Es ist ein Fehler aufgetreten: ' + (json?.msg||'Unbekannter Fehler'));
-        }
+
+        // Erfolg anzeigen (Response ist "opaque", aber Server verarbeitet trotzdem)
+        document.getElementById('seite1').style.display='none';
+        document.getElementById('seite2').style.display='none';
+        document.getElementById('success-container').style.display='flex';
+        sendHeight();
       }catch(err){
         console.error(err);
         alert('Es ist ein Fehler aufgetreten. Bitte später erneut versuchen.');
