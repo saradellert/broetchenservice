@@ -1,10 +1,23 @@
-<!-- index.html — Brötchen-Bestellung (modern + Auto-Resize + Lieferpauschalen) -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Brötchen-Bestellung</title>
+
+  <!-- Auto-Height fürs Wix-iFrame (global verfügbar) -->
+  <script>
+    function sendHeight() {
+      const h = document.body.scrollHeight;
+      window.parent.postMessage({ type: "setHeight", height: h }, "*");
+    }
+    window.addEventListener("load", sendHeight);
+    window.addEventListener("resize", sendHeight);
+    // auf DOM-Änderungen reagieren (Liefertag hinzufügen/entfernen etc.)
+    new MutationObserver(sendHeight).observe(document.body, {
+      childList: true, subtree: true, attributes: true
+    });
+  </script>
 
   <!-- CONFIG (nur hier anfassen) -->
   <script>
@@ -150,11 +163,10 @@
     const lieferbereich = document.getElementById('lieferbereich');
     const lieferHinweis = document.getElementById('lieferkostenHinweis');
 
-    function sendHeightToParent(){ setTimeout(()=>{ parent.postMessage({type:'setHeight',height:document.body.scrollHeight},'*'); },150); }
-
     function showErr(id,msg){
       const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block';
       if(id==='wohnung-error') document.getElementById('wohnung-picker').classList.add('invalid');
+      sendHeight(); // Höhe nach Fehlermeldung anpassen
     }
     function clearErrs(){
       document.querySelectorAll('.error').forEach(e=>e.style.display='none');
@@ -175,7 +187,7 @@
       s1.style.display = (z==='s1')?'block':'none';
       s2.style.display = (z==='s2')?'block':'none';
       if(z==='s2' && !lieferbereich.childElementCount) neuenLiefertag();
-      sendHeightToParent();
+      sendHeight();
     }
 
     function optionenHTMLFor(date){
@@ -206,7 +218,7 @@
       `;
       lieferbereich.appendChild(day);
       addSorte(day.querySelector('[data-add]'));
-      sendHeightToParent();
+      sendHeight();
     }
 
     function addSorte(btn){
@@ -220,7 +232,7 @@
       `;
       wrap.appendChild(row);
       updateTotal();
-      sendHeightToParent();
+      sendHeight();
     }
 
     function euro(n){ return n.toFixed(2).replace('.',',')+' €'; }
@@ -231,11 +243,11 @@
       document.querySelectorAll('.day').forEach(day=>{
         const dateStr = day.querySelector('input[type="date"]').value;
         const badge = day.querySelector('[data-badge]');
-        if(!dateStr){ badge.textContent = 'Lieferpauschale wird berechnet'; return; }
+        if(!dateStr){ if(badge) badge.textContent = 'Lieferpauschale wird berechnet'; return; }
         const d = new Date(dateStr);
         const isWE = (d.getDay()===6 || d.getDay()===0);
         const aufpreis = isWE ? aufpreisWochenende : aufpreisWoche;
-        badge.textContent = `Lieferpauschale +${euro(aufpreis)}`;
+        if(badge) badge.textContent = `Lieferpauschale +${euro(aufpreis)}`;
 
         let sum = 0;
         day.querySelectorAll('.dynrow').forEach(r=>{
@@ -246,18 +258,18 @@
         if(sum>0){ total += sum + aufpreis; lieferSum += aufpreis; }
       });
       document.getElementById('gesamtpreis').textContent = euro(total);
-      lieferHinweis.textContent = `davon Lieferpauschalen: ${euro(lieferSum)}`;
+      document.getElementById('lieferkostenHinweis').textContent = `davon Lieferpauschalen: ${euro(lieferSum)}`;
     }
 
     // Events
-    document.getElementById('btn-to-page2').addEventListener('click',()=>{ if(validatePage1()) wechsleSeite('s2'); else sendHeightToParent(); });
+    document.getElementById('btn-to-page2').addEventListener('click',()=>{ if(validatePage1()) wechsleSeite('s2'); else sendHeight(); });
     document.getElementById('btn-to-page1').addEventListener('click',()=>wechsleSeite('s1'));
     document.getElementById('btn-add-day').addEventListener('click',neuenLiefertag);
     document.body.addEventListener('click',e=>{
       const t = e.target;
       if(t.matches('[data-add]')) addSorte(t);
-      if(t.matches('.remove')){ t.closest('.dynrow').remove(); updateTotal(); sendHeightToParent(); }
-      if(t.matches('.dayrm')){ t.closest('.day').remove(); updateTotal(); sendHeightToParent(); }
+      if(t.matches('.remove')){ t.closest('.dynrow').remove(); updateTotal(); sendHeight(); }
+      if(t.matches('.dayrm')){ t.closest('.day').remove(); updateTotal(); sendHeight(); }
     });
     document.body.addEventListener('change',e=>{
       if(e.target.matches('input[type="number"], select')) updateTotal();
@@ -298,7 +310,7 @@
       if(!hasDay){
         const e=document.getElementById('bestellung-error');
         e.textContent='Ihre Bestellung ist leer. Bitte fügen Sie mindestens eine Sorte hinzu.'; e.style.display='block';
-        sendHeightToParent(); return;
+        sendHeight(); return;
       }
 
       const overlay = document.getElementById('loading-overlay'); overlay.style.display='flex';
@@ -312,18 +324,15 @@
         document.getElementById('seite1').style.display='none';
         document.getElementById('seite2').style.display='none';
         document.getElementById('success-container').style.display='flex';
+        sendHeight();
       }catch(err){
         console.error(err);
         alert('Es ist ein Fehler aufgetreten. Bitte später erneut versuchen.');
       }finally{
-        overlay.style.display='none'; sendHeightToParent();
+        overlay.style.display='none';
       }
     }
     document.getElementById('btn-submit').addEventListener('click',submitForm);
-
-    // iFrame-Height Sync
-    new MutationObserver(sendHeightToParent).observe(document.body,{childList:true,subtree:true,attributes:true});
-    sendHeightToParent(); // initial
   });
   </script>
 </body>
