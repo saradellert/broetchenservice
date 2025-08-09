@@ -1,15 +1,16 @@
+<!-- index.html — Brötchen-Bestellung (modern + Auto-Resize + Lieferpauschalen) -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Brötchen-Bestellung</title>
 
-  <!-- CONFIG (Frontend) -->
+  <!-- CONFIG (nur hier anfassen) -->
   <script>
     window.BROETCHENFORM_CONFIG = {
       googleAppScriptUrl: 'https://script.google.com/macros/s/AKfycbwMIN3aqq1-f9_5_Ud3d6V3xICUCD8hdFOBEYMtNn1ETPawsZg9uhHZvUNYdpnzNqMErw/exec',
-      hideMueslibroetchenOnWeekend: true
+      muesliNurAmWochenende: true  // Müslibrötchen NUR Sa/So
     };
   </script>
 
@@ -21,7 +22,7 @@
     :root{
       --bg:#DFDCD7; --card:#FFFFFFF2; --text:#292826; --brand:#292826;
       --border:#E2E2E2; --shadow:0 15px 40px rgba(0,0,0,.10);
-      --danger:#D9534F; --ok:#2C8C5E;
+      --danger:#D9534F; --ok:#2C8C5E; --muted:#6a6a69;
     }
     *{box-sizing:border-box}
     html{font-size:16px}
@@ -35,67 +36,47 @@
     .card{
       background:var(--card); border:1px solid var(--border); border-radius:20px; padding:26px;
       box-shadow:var(--shadow); backdrop-filter:saturate(180%) blur(6px);
-      transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
     }
-    .card:hover{transform:translateY(-1px)}
-    h2.section{font-size:1.6rem;margin:0 0 14px 0;font-weight:700;letter-spacing:.2px}
-    p.sub{margin:.25rem 0 1.25rem;color:#6a6a69}
+    h2.section{font-size:1.6rem;margin:0 0 14px;font-weight:700}
+    p.sub{margin:.25rem 0 1.25rem;color:var(--muted)}
     .grid{display:grid;gap:14px}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media (max-width:768px){.row{grid-template-columns:1fr}}
     label{font-weight:600;font-size:.95rem;margin:6px 0 6px 2px;display:block}
-    input,select,button{font:inherit}
-    input,select{
-      width:100%; background:#fff; border:1px solid var(--border); border-radius:12px; padding:.9rem .95rem;
-      outline:none; transition:border-color .15s ease, box-shadow .15s ease, transform .05s ease;
-      box-shadow:inset 0 0 0 rgba(0,0,0,0);
-    }
+    input,select{width:100%; background:#fff; border:1px solid var(--border); border-radius:12px; padding:.9rem .95rem; outline:none}
     input:focus,select:focus{border-color:#bcbcbc; box-shadow:0 0 0 4px #00000010}
     input.is-invalid,select.is-invalid{border-color:var(--danger); box-shadow:0 0 0 4px #D9534F20}
-    .hint{font-size:.82rem;color:#7b7a79;margin-top:6px}
     .error{font-size:.86rem;color:var(--danger);display:none;margin-top:6px}
     .apts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
     .apts input{display:none}
-    .apt{
-      border:1px solid var(--border); border-radius:999px; padding:.9rem 1rem; text-align:center; cursor:pointer; user-select:none;
-      transition:transform .06s ease, background .2s ease, color .2s ease, border-color .2s ease;
-      font-weight:600; background:#fff;
-    }
+    .apt{border:1px solid var(--border); border-radius:999px; padding:.9rem 1rem; text-align:center; cursor:pointer; font-weight:600; background:#fff}
     .apts input:checked + .apt{background:var(--brand); color:#fff; border-color:var(--brand)}
     .apts.invalid .apt{border-color:var(--danger)}
     .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;margin-top:18px}
-    .btn{
-      border:2px solid var(--brand); background:var(--brand); color:#fff; padding:.95rem 1.2rem; border-radius:12px; cursor:pointer; font-weight:700;
-      width:100%; transition:transform .05s ease, filter .15s ease, background .15s ease, color .15s ease; letter-spacing:.1px
-    }
-    .btn:hover{filter:brightness(.96)}
-    .btn:active{transform:translateY(1px)}
+    .btn{border:2px solid var(--brand); background:var(--brand); color:#fff; padding:.95rem 1.2rem; border-radius:12px; cursor:pointer; font-weight:700; width:100%}
     .btn.alt{background:#fff;color:var(--brand)}
-    .pill{display:inline-flex;align-items:center;gap:8px;border:1px dashed var(--border);padding:.35rem .6rem;border-radius:999px;color:#6a6a69;font-size:.86rem}
+    .muted{color:var(--muted);font-size:.9rem}
     .price{font-weight:800;font-size:1.6rem;margin:14px 0;color:var(--brand)}
+    .subprice{color:var(--muted);font-size:.95rem;margin-top:-6px}
     .day{border:1px dashed var(--border);border-radius:16px;padding:14px;margin:10px 0 16px;background:#fff}
     .dayhead{display:flex;align-items:flex-end;gap:10px;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:10px}
     .dayrm{border:none;background:transparent;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
     .dynhdr{display:grid;grid-template-columns:1fr 90px 40px;gap:10px;font-size:.8rem;color:#81807d;margin:6px 4px 0 4px}
     .dynrow{display:grid;grid-template-columns:1fr 90px 40px;gap:10px;align-items:center;margin-top:6px}
     .remove{border:none;background:transparent;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
-    .badge{background:#f3f3f2;border:1px solid var(--border);border-radius:999px;padding:.35rem .6rem;font-size:.83rem}
-    .ok{color:var(--ok)}
+    .badge{background:#f3f3f2;border:1px solid var(--border);border-radius:999px;padding:.25rem .5rem;font-size:.82rem;color:var(--muted)}
     .overlay,.success{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#ffffffee;z-index:30}
     .spinner{width:52px;height:52px;border:5px solid #eee;border-top:5px solid var(--brand);border-radius:50%;animation:spin 1s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     .tick svg{display:block;margin:0 auto 14px;width:86px;height:86px}
-    .tick h3{text-align:center;margin:0 0 6px 0}
-    .tick p{text-align:center;margin:0;color:#6c6b69}
-    .fade-in{animation:fade .18s ease both}
-    @keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+    .tick h3{text-align:center;margin:0 0 6px}
+    .tick p{text-align:center;margin:0;color:var(--muted)}
   </style>
 </head>
 <body>
   <div class="shell">
-    <div id="seite1" class="card fade-in">
+    <!-- Seite 1 -->
+    <div id="seite1" class="card">
       <h2 class="section">Allgemeine Informationen</h2>
-      <p class="sub">Bitte fülle die Felder aus und wähle deine Wohnung.</p>
+      <p class="sub">Bitte fülle die Felder aus und wähle deine Wohnung. Du kannst mehrere Liefertage hinzufügen – pro Tag fällt eine Lieferpauschale an.</p>
       <div class="grid">
         <div>
           <label for="name">Name</label>
@@ -118,7 +99,6 @@
             <input id="w6" name="wohnung" type="radio" value="Malibu S"><label class="apt" for="w6">Malibu S</label>
           </div>
           <div class="error" id="wohnung-error"></div>
-          <div class="hint">Du kannst später mehrere Liefertage mit Aufpreis hinzufügen.</div>
         </div>
         <div class="actions">
           <button id="btn-to-page2" class="btn">Weiter zur Brötchenauswahl</button>
@@ -126,15 +106,16 @@
       </div>
     </div>
 
-    <div id="seite2" class="card fade-in" style="display:none">
+    <!-- Seite 2 -->
+    <div id="seite2" class="card" style="display:none">
       <h2 class="section">Ihre Bestellung</h2>
       <div id="lieferbereich"></div>
-      <div class="pill">Tages-Aufpreis wird automatisch berechnet</div>
       <div id="bestellung-error" class="error"></div>
       <div style="margin-top:12px">
         <button id="btn-add-day" class="btn alt" style="width:auto">+ Weiteren Liefertag hinzufügen</button>
       </div>
       <div class="price">Gesamtpreis: <span id="gesamtpreis">0,00 €</span></div>
+      <div class="subprice" id="lieferkostenHinweis" aria-live="polite">davon Lieferpauschalen: 0,00 €</div>
       <div class="actions">
         <button id="btn-to-page1" class="btn alt">Zurück</button>
         <button id="btn-submit" class="btn">Bestellung absenden</button>
@@ -142,8 +123,8 @@
     </div>
   </div>
 
+  <!-- Overlays -->
   <div id="loading-overlay" class="overlay"><div class="spinner"></div></div>
-
   <div id="success-container" class="success">
     <div class="tick">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
@@ -158,6 +139,8 @@
   <script>
   document.addEventListener('DOMContentLoaded', () => {
     const cfg = window.BROETCHENFORM_CONFIG;
+
+    // Preise
     const produkte = { "Müslibrötchen": 1.50, "Roggenkrüsti": 0.99, "Fitnessbrötchen": 1.15, "Kürbiskernbrötchen": 1.20, "Dinkelbrötchen": 1.20, "Schnittbrötchen": 0.60, "Kraftkörnchen": 1.15, "Mohnbrötchen": 0.85, "Sesambrötchen": 0.85, "Morgengoldbrötchen": 0.95, "Kartoffelbrötchen": 1.05, "Kürbiskäsebrötchen": 1.60, "Käsebrötchen": 1.55, "Milchbrötchen": 1.00, "Rosinenbrötchen": 1.10, "Buttercroissant": 1.85, "Croissant": 1.85, "Schokoladencroissant": 2.10, "Laugenstange": 1.60, "Laugenbrötchen": 1.20, "Rosinenschnecke": 2.45, "Donut": 1.85, "Berliner": 1.80, "Mandelhörnchen": 2.80, "großes Kassler": 4.55, "Kraftkornbrot": 4.85, "Münsterländer": 4.50, "Fitnessbrot": 4.85, "Dinkelbrot": 4.55, "Steinofenbrot": 4.55, "Holzhacker": 4.85, "Hamburger Brot": 3.70, "Pottstuten": 4.50 };
     const aufpreisWoche = 1.70;
     const aufpreisWochenende = 2.20;
@@ -165,6 +148,7 @@
     const s1 = document.getElementById('seite1');
     const s2 = document.getElementById('seite2');
     const lieferbereich = document.getElementById('lieferbereich');
+    const lieferHinweis = document.getElementById('lieferkostenHinweis');
 
     function sendHeightToParent(){ setTimeout(()=>{ parent.postMessage({type:'setHeight',height:document.body.scrollHeight},'*'); },150); }
 
@@ -199,20 +183,20 @@
       const isWE = d ? (d.getDay()===6 || d.getDay()===0) : false;
       let html = '<option value="" disabled selected>Sorte wählen</option>';
       for(const name of Object.keys(produkte)){
-        if(cfg.hideMueslibroetchenOnWeekend && isWE && name==='Müslibrötchen') continue;
+        if(cfg.muesliNurAmWochenende && !isWE && name==='Müslibrötchen') continue; // Wochentag: kein Müslibrötchen
         html += `<option value="${name}">${name}</option>`;
       }
       return html;
     }
 
     function neuenLiefertag(){
-      const day = document.createElement('div'); day.className='day fade-in';
+      const day = document.createElement('div'); day.className='day';
       day.innerHTML = `
         <div class="dayhead">
           <div style="flex:1">
             <label>Datum</label>
             <input type="date" />
-            <div class="hint">Aufpreis wird automatisch berücksichtigt</div>
+            <div class="badge" data-badge>Lieferpauschale wird berechnet</div>
           </div>
           <button class="dayrm" title="Tag entfernen">&times;</button>
         </div>
@@ -227,7 +211,7 @@
 
     function addSorte(btn){
       const wrap = btn.closest('.day').querySelector('.sorten');
-      const row = document.createElement('div'); row.className='dynrow fade-in';
+      const row = document.createElement('div'); row.className='dynrow';
       const date = btn.closest('.day').querySelector('input[type="date"]').value || '';
       row.innerHTML = `
         <select>${optionenHTMLFor(date)}</select>
@@ -239,25 +223,33 @@
       sendHeightToParent();
     }
 
+    function euro(n){ return n.toFixed(2).replace('.',',')+' €'; }
+
     function updateTotal(){
       let total = 0;
+      let lieferSum = 0;
       document.querySelectorAll('.day').forEach(day=>{
         const dateStr = day.querySelector('input[type="date"]').value;
-        if(!dateStr) return;
+        const badge = day.querySelector('[data-badge]');
+        if(!dateStr){ badge.textContent = 'Lieferpauschale wird berechnet'; return; }
         const d = new Date(dateStr);
         const isWE = (d.getDay()===6 || d.getDay()===0);
         const aufpreis = isWE ? aufpreisWochenende : aufpreisWoche;
+        badge.textContent = `Lieferpauschale +${euro(aufpreis)}`;
+
         let sum = 0;
         day.querySelectorAll('.dynrow').forEach(r=>{
           const s = r.querySelector('select').value;
           const m = parseInt(r.querySelector('input[type="number"]').value) || 0;
           sum += (produkte[s]||0) * m;
         });
-        if(sum>0) total += sum + aufpreis;
+        if(sum>0){ total += sum + aufpreis; lieferSum += aufpreis; }
       });
-      document.getElementById('gesamtpreis').textContent = total.toFixed(2).replace('.',',')+' €';
+      document.getElementById('gesamtpreis').textContent = euro(total);
+      lieferHinweis.textContent = `davon Lieferpauschalen: ${euro(lieferSum)}`;
     }
 
+    // Events
     document.getElementById('btn-to-page2').addEventListener('click',()=>{ if(validatePage1()) wechsleSeite('s2'); else sendHeightToParent(); });
     document.getElementById('btn-to-page1').addEventListener('click',()=>wechsleSeite('s1'));
     document.getElementById('btn-add-day').addEventListener('click',neuenLiefertag);
@@ -311,7 +303,6 @@
 
       const overlay = document.getElementById('loading-overlay'); overlay.style.display='flex';
       try{
-        // Kein CORS-Ärger: wir schicken "opaque" (Browser kann Antwort nicht lesen, Server bekommt alles)
         await fetch(cfg.googleAppScriptUrl, {
           method:'POST',
           mode:'no-cors',
@@ -330,7 +321,9 @@
     }
     document.getElementById('btn-submit').addEventListener('click',submitForm);
 
+    // iFrame-Height Sync
     new MutationObserver(sendHeightToParent).observe(document.body,{childList:true,subtree:true,attributes:true});
+    sendHeightToParent(); // initial
   });
   </script>
 </body>
