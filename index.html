@@ -1,440 +1,888 @@
 <!DOCTYPE html>
+
 <html lang="de">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Brötchen-Bestellung</title>
 
-  <script>
-    function sendHeight() {
-      const h = document.body.scrollHeight;
-      window.parent.postMessage({ type: "setHeight", height: h }, "*");
-    }
-    window.addEventListener("load", sendHeight);
-    window.addEventListener("resize", sendHeight);
-    new MutationObserver(sendHeight).observe(document.body, {
-      childList: true, subtree: true, attributes: true
-    });
-  </script>
+  <meta charset="UTF-8" />
 
-  <script>
-    window.BROETCHENFORM_CONFIG = {
-      googleAppScriptUrl: 'https://script.google.com/macros/s/AKfycbwMIN3aqq1-f9_5_Ud3d6V3xICUCD8hdFOBEYMtNn1ETPawsZg9uhHZvUNYdpnzNqMErw/exec',
-      muesliNurAmWochenende: true  // Müslibrötchen NUR Sa/So
-    };
-  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Brötchen-Bestellung</title>
 
-  <style>
-    :root{
-      --bg:#DFDCD7; --card:#FFFFFFF2; --text:#292826; --brand:#292826;
-      --border:#E2E2E2; --shadow:0 15px 40px rgba(0,0,0,.10);
-      --danger:#D9534F; --ok:#2C8C5E; --muted:#6a6a69;
-      --radius-card:24px; --radius-input:16px; --radius-btn:16px;
-      --ctrl-pad: .9rem .95rem;      /* Desktop Input Padding */
-      --gap: 14px;
-    }
-    *{box-sizing:border-box}
-    html{font-size:16px}
-    body{
-      margin:0; color:var(--text);
-      /* Hintergrund: transparent wie gewünscht */
-      background:transparent; 
-      /* Wenn du Farbe willst, ersetze die Zeile oben durch: background: var(--bg); */
-      font-family:'Inter',system-ui,Segoe UI,Arial,sans-serif;
-      min-height:100svh; padding:24px;
-    }
-    .shell{max-width:760px;margin:0 auto}
-    .card{
-      background:var(--card); border:1px solid var(--border); border-radius:var(--radius-card); padding:28px;
-      box-shadow:var(--shadow); backdrop-filter:saturate(180%) blur(6px);
-    }
-    h2.section{font-size:1.6rem;margin:0 0 14px;font-weight:700}
-    p.sub{margin:.25rem 0 1.25rem;color:var(--muted)}
-    .grid{display:grid;gap:var(--gap)}
-    label{font-weight:600;font-size:.95rem;margin:6px 0 6px 2px;display:block}
-    input,select{
-      width:100%; background:#fff; border:1px solid var(--border); border-radius:var(--radius-input); padding:var(--ctrl-pad); outline:none;
-      font-family:inherit; font-size:1rem;
-    }
-    input[type="date"]{ font-family:inherit; }
-    input:focus,select:focus{border-color:#bcbcbc; box-shadow:0 0 0 4px #00000010}
-    input.is-invalid,select.is-invalid{border-color:var(--danger); box-shadow:0 0 0 4px #D9534F20}
-    .error{font-size:.86rem;color:var(--danger);display:none;margin-top:6px}
-    .apts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
-    .apts input{display:none}
-    .apt{border:1px solid var(--border); border-radius:999px; padding:.9rem 1rem; text-align:center; cursor:pointer; font-weight:600; background:#fff}
-    .apts input:checked + .apt{background:var(--brand); color:#fff; border-color:var(--brand)}
-    .apts.invalid .apt{border-color:var(--danger)}
 
-    .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;margin-top:22px}
-    .btn{
-      border:2px solid var(--brand); background:var(--brand); color:#fff; padding:.95rem 1.2rem; border-radius:var(--radius-btn);
-      cursor:pointer; font-weight:700; width:100%;
-    }
-    .btn.alt{background:#fff;color:var(--brand)}
-    .btn.pill{border-radius:100px}
-    .btn.sm{padding:.5rem .9rem; font-size:.9rem; width:auto}
-    .btn:disabled{opacity:.6; cursor:not-allowed}
 
-    .muted{color:var(--muted);font-size:.9rem}
-    .price{font-weight:800;font-size:1.8rem;margin:18px 0 8px;color:var(--brand)}
-    .subprice{color:var(--muted);font-size:.95rem;margin:0 0 22px}
+  <!-- Auto-Height fürs Wix-iFrame (global verfügbar) -->
 
-    /* Liefertag-Container */
-    .day{
-      position:relative;
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:18px;
-      margin:12px 0 18px;
-      background:#fff;
-    }
-    .dayhead{
-      display:flex;align-items:flex-end;gap:10px;justify-content:space-between;
-      border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:12px;
-      padding-right:42px; /* Platz für X */
-    }
-    .dayrm{
-      position:absolute; top:10px; right:10px;
-      border:none;background:#fff; color:var(--danger);
-      width:32px;height:32px;border-radius:999px; line-height:30px; font-size:18px; cursor:pointer;
-      border:1px solid #f0d6d5;
-    }
-    .dynhdr{
-      display:grid;grid-template-columns:1fr 90px 32px;gap:10px;
-      font-size:.8rem;color:#81807d;margin:6px 4px 6px 4px
-    }
-    .dynrow{
-      display:grid;grid-template-columns:1fr 90px 32px;gap:10px;align-items:center;margin-top:6px
-    }
-    .remove{border:none;background:transparent;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
-    .dayfoot{margin-top:12px}
-    .dayfoot .cost{color:var(--muted);font-size:.9rem}
+  <script>
 
-    /* Overlays (zentriert über dem Formular) */
-    .overlay{
-      display:none; position:fixed; inset:0; z-index:9999;
-      background:rgba(255,255,255,.75);
-      backdrop-filter:blur(2px);
-      align-items:center; justify-content:center;
-    }
-    .spinner{
-      width:44px; height:44px; border:4px solid #eee; border-top-color:var(--brand);
-      border-radius:50%; animation:spin 1s linear infinite;
-    }
-    @keyframes spin{to{transform:rotate(360deg)}}
+    function sendHeight() {
 
-    .success{
-      display:none; position:fixed; inset:0; z-index:10000;
-      background:rgba(255,255,255,.9); backdrop-filter:blur(2px);
-      align-items:center; justify-content:center;
-    }
-    .tick{display:flex;flex-direction:column;align-items:center;gap:10px}
-    .tick svg{width:84px;height:84px; animation:pop .35s ease-out both}
-    @keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+      const h = document.body.scrollHeight;
 
-    /* ---------- MOBILE TUNING ---------- */
-    @media (max-width: 600px){
-      html{font-size:15px}
-      body{padding:18px}
-      .card{padding:18px}
-      :root{ --gap: 10px; --ctrl-pad: .6rem .7rem; }
-      label{font-size:.9rem}
-      input,select{font-size:.95rem}
+      window.parent.postMessage({ type: "setHeight", height: h }, "*");
 
-      /* Header-Zeile ausblenden, spart Platz */
-      .dynhdr{display:none}
+    }
 
-      /* Zweizeilig: Sorte oben volle Breite, unten Menge + X */
-      .dynrow{
-        grid-template-columns: 1fr 56px 32px;  /* zweite Zeile: Menge schmal */
-        grid-template-rows: auto auto;
-        gap:8px;
-      }
-      .dynrow > select{
-        grid-column: 1 / 4;    /* Sorte über volle Breite */
-      }
-      .dynrow > input[type="number"]{
-        grid-column: 1 / 2;    /* links schmal */
-        text-align:center;
-        padding:.5rem .4rem;
-      }
-      .dynrow > .remove{
-        grid-column: 3 / 4;
-        justify-self:end;
-        align-self:center;
-      }
+    window.addEventListener("load", sendHeight);
 
-      .day{padding:14px}
-      .dayhead{margin-bottom:10px; padding-bottom:8px; padding-right:40px}
-      .dayrm{top:8px; right:8px; width:28px; height:28px; line-height:26px; font-size:16px}
-      .btn.sm{width:100%}        /* kleine Buttons full-width für besseren Tap */
-      .price{font-size:1.6rem}
-      .subprice{font-size:.92rem}
-    }
-  </style>
+    window.addEventListener("resize", sendHeight);
+
+    new MutationObserver(sendHeight).observe(document.body, {
+
+      childList: true, subtree: true, attributes: true
+
+    });
+
+  </script>
+
+
+
+  <!-- CONFIG (nur hier anfassen) -->
+
+  <script>
+
+    window.BROETCHENFORM_CONFIG = {
+
+      googleAppScriptUrl: 'https://script.google.com/macros/s/AKfycbwMIN3aqq1-f9_5_Ud3d6V3xICUCD8hdFOBEYMtNn1ETPawsZg9uhHZvUNYdpnzNqMErw/exec',
+
+      muesliNurAmWochenende: true  // Müslibrötchen NUR Sa/So
+
+    };
+
+  </script>
+
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+
+  <style>
+
+    :root{
+
+      --bg:#DFDCD7; --card:#FFFFFFF2; --text:#292826; --brand:#292826;
+
+      --border:#E2E2E2; --shadow:0 15px 40px rgba(0,0,0,.10);
+
+      --danger:#D9534F; --ok:#2C8C5E; --muted:#6a6a69;
+
+      --radius-card:24px; --radius-input:16px; --radius-btn:16px;
+
+      --ctrl-pad: .9rem .95rem;     /* Desktop Input Padding */
+
+      --gap: 14px;
+
+    }
+
+    *{box-sizing:border-box}
+
+    html{font-size:16px}
+
+    body{
+
+      margin:0; color:var(--text);
+
+      /* Hintergrund: transparent wie gewünscht */
+
+      background:transparent; 
+
+      /* Wenn du Farbe willst, ersetze die Zeile oben durch: background: var(--bg); */
+
+      font-family:'Inter',system-ui,Segoe UI,Arial,sans-serif;
+
+      min-height:100svh; padding:24px;
+
+    }
+
+    .shell{max-width:760px;margin:0 auto}
+
+    .card{
+
+      background:var(--card); border:1px solid var(--border); border-radius:var(--radius-card); padding:28px;
+
+      box-shadow:var(--shadow); backdrop-filter:saturate(180%) blur(6px);
+
+    }
+
+    h2.section{font-size:1.6rem;margin:0 0 14px;font-weight:700}
+
+    p.sub{margin:.25rem 0 1.25rem;color:var(--muted)}
+
+    .grid{display:grid;gap:var(--gap)}
+
+    label{font-weight:600;font-size:.95rem;margin:6px 0 6px 2px;display:block}
+
+    input,select{
+
+      width:100%; background:#fff; border:1px solid var(--border); border-radius:var(--radius-input); padding:var(--ctrl-pad); outline:none;
+
+      font-family:inherit; font-size:1rem;
+
+    }
+
+    input[type="date"]{ font-family:inherit; }
+
+    input:focus,select:focus{border-color:#bcbcbc; box-shadow:0 0 0 4px #00000010}
+
+    input.is-invalid,select.is-invalid{border-color:var(--danger); box-shadow:0 0 0 4px #D9534F20}
+
+    .error{font-size:.86rem;color:var(--danger);display:none;margin-top:6px}
+
+    .apts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+
+    .apts input{display:none}
+
+    .apt{border:1px solid var(--border); border-radius:999px; padding:.9rem 1rem; text-align:center; cursor:pointer; font-weight:600; background:#fff}
+
+    .apts input:checked + .apt{background:var(--brand); color:#fff; border-color:var(--brand)}
+
+    .apts.invalid .apt{border-color:var(--danger)}
+
+
+
+    .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;margin-top:22px}
+
+    .btn{
+
+      border:2px solid var(--brand); background:var(--brand); color:#fff; padding:.95rem 1.2rem; border-radius:var(--radius-btn);
+
+      cursor:pointer; font-weight:700; width:100%;
+
+    }
+
+    .btn.alt{background:#fff;color:var(--brand)}
+
+    .btn.pill{border-radius:100px}
+
+    .btn.sm{padding:.5rem .9rem; font-size:.9rem; width:auto}
+
+    .btn:disabled{opacity:.6; cursor:not-allowed}
+
+
+
+    .muted{color:var(--muted);font-size:.9rem}
+
+    .price{font-weight:800;font-size:1.8rem;margin:18px 0 8px;color:var(--brand)}
+
+    .subprice{color:var(--muted);font-size:.95rem;margin:0 0 22px}
+
+
+
+    /* Liefertag-Container */
+
+    .day{
+
+      position:relative;
+
+      border:1px solid var(--border);
+
+      border-radius:20px;
+
+      padding:18px;
+
+      margin:12px 0 18px;
+
+      background:#fff;
+
+    }
+
+    .dayhead{
+
+      display:flex;align-items:flex-end;gap:10px;justify-content:space-between;
+
+      border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:12px;
+
+      padding-right:42px; /* Platz für X */
+
+    }
+
+    .dayrm{
+
+      position:absolute; top:10px; right:10px;
+
+      border:none;background:#fff; color:var(--danger);
+
+      width:32px;height:32px;border-radius:999px; line-height:30px; font-size:18px; cursor:pointer;
+
+      border:1px solid #f0d6d5;
+
+    }
+
+    .dynhdr{
+
+      display:grid;grid-template-columns:1fr 90px 32px;gap:10px;
+
+      font-size:.8rem;color:#81807d;margin:6px 4px 6px 4px
+
+    }
+
+    .dynrow{
+
+      display:grid;grid-template-columns:1fr 90px 32px;gap:10px;align-items:center;margin-top:6px
+
+    }
+
+    .remove{border:none;background:transparent;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
+
+    .dayfoot{margin-top:12px}
+
+    .dayfoot .cost{color:var(--muted);font-size:.9rem}
+
+
+
+    /* Overlays (zentriert über dem Formular) */
+
+    .overlay{
+
+      display:none; position:fixed; inset:0; z-index:9999;
+
+      background:rgba(255,255,255,.75);
+
+      backdrop-filter:blur(2px);
+
+      align-items:center; justify-content:center;
+
+    }
+
+    .spinner{
+
+      width:44px; height:44px; border:4px solid #eee; border-top-color:var(--brand);
+
+      border-radius:50%; animation:spin 1s linear infinite;
+
+    }
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+
+
+    .success{
+
+      display:none; position:fixed; inset:0; z-index:10000;
+
+      background:rgba(255,255,255,.9); backdrop-filter:blur(2px);
+
+      align-items:center; justify-content:center;
+
+    }
+
+    .tick{display:flex;flex-direction:column;align-items:center;gap:10px}
+
+    .tick svg{width:84px;height:84px; animation:pop .35s ease-out both}
+
+    @keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+
+
+
+    /* ---------- MOBILE TUNING ---------- */
+
+    @media (max-width: 600px){
+
+      html{font-size:15px}
+
+      body{padding:18px}
+
+      .card{padding:18px}
+
+      :root{ --gap: 10px; --ctrl-pad: .6rem .7rem; }
+
+      label{font-size:.9rem}
+
+      input,select{font-size:.95rem}
+
+
+
+      /* Header-Zeile ausblenden, spart Platz */
+
+      .dynhdr{display:none}
+
+
+
+      /* Zweizeilig: Sorte oben volle Breite, unten Menge + X */
+
+      .dynrow{
+
+        grid-template-columns: 1fr 56px 32px;  /* zweite Zeile: Menge schmal */
+
+        grid-template-rows: auto auto;
+
+        gap:8px;
+
+      }
+
+      .dynrow > select{
+
+        grid-column: 1 / 4;    /* Sorte über volle Breite */
+
+      }
+
+      .dynrow > input[type="number"]{
+
+        grid-column: 1 / 2;    /* links schmal */
+
+        text-align:center;
+
+        padding:.5rem .4rem;
+
+      }
+
+      .dynrow > .remove{
+
+        grid-column: 3 / 4;
+
+        justify-self:end;
+
+        align-self:center;
+
+      }
+
+
+
+      .day{padding:14px}
+
+      .dayhead{margin-bottom:10px; padding-bottom:8px; padding-right:40px}
+
+      .dayrm{top:8px; right:8px; width:28px; height:28px; line-height:26px; font-size:16px}
+
+      .btn.sm{width:100%}        /* kleine Buttons full-width für besseren Tap */
+
+      .price{font-size:1.6rem}
+
+      .subprice{font-size:.92rem}
+
+    }
+
+  </style>
+
 </head>
+
 <body>
-  <div class="shell">
-    <div id="seite1" class="card">
-      <h2 class="section">Allgemeine Informationen</h2>
-      <p class="sub">Bitte fülle die Felder aus und wähle deine Wohnung.</p>
-      <div class="grid">
-        <div>
-          <label for="name">Name</label>
-          <input id="name" type="text" placeholder="Max Mustermann">
-          <div class="error" id="name-error"></div>
-        </div>
-        <div>
-          <label for="email">E-Mail</label>
-          <input id="email" type="email" placeholder="max.mustermann@example.com" inputmode="email" autocomplete="email">
-          <div class="error" id="email-error"></div>
-        </div>
-        <div>
-          <label>Wohnung / Apartment</label>
-          <div id="wohnung-picker" class="apts">
-            <input id="w1" name="wohnung" type="radio" value="La Maison"><label class="apt" for="w1">La Maison</label>
-            <input id="w2" name="wohnung" type="radio" value="Suite Maritim"><label class="apt" for="w2">Suite Maritim</label>
-            <input id="w3" name="wohnung" type="radio" value="Maisonette Beach"><label class="apt" for="w3">Maisonette Beach</label>
-            <input id="w4" name="wohnung" type="radio" value="Cottage & Garden"><label class="apt" for="w4">Cottage & Garden</label>
-            <input id="w5" name="wohnung" type="radio" value="Malibu L"><label class="apt" for="w5">Malibu L</label>
-            <input id="w6" name="wohnung" type="radio" value="Malibu S"><label class="apt" for="w6">Malibu S</label>
-          </div>
-          <div class="error" id="wohnung-error"></div>
-        </div>
-        <div class="actions">
-          <button id="btn-to-page2" class="btn">Weiter zur Brötchenauswahl</button>
-        </div>
-      </div>
-    </div>
 
-    <div id="seite2" class="card" style="display:none">
-      <h2 class="section">Ihre Bestellung</h2>
-      <div id="lieferbereich"></div>
-      <div id="bestellung-error" class="error"></div>
+  <div class="shell">
 
-      <div style="margin-top:12px">
-        <button id="btn-add-day" class="btn pill sm">+ Weiteren Liefertag hinzufügen</button>
-      </div>
+    <!-- Seite 1 -->
 
-      <div class="price">Gesamtpreis: <span id="gesamtpreis">0,00 €</span></div>
-      <div class="subprice" id="lieferkostenHinweis" aria-live="polite">davon Lieferkosten: 0,00 €</div>
+    <div id="seite1" class="card">
 
-      <div class="actions">
-        <button id="btn-to-page1" class="btn alt">Zurück</button>
-        <button id="btn-submit" class="btn">Bestellung absenden</button>
-      </div>
-    </div>
-  </div>
+      <h2 class="section">Allgemeine Informationen</h2>
 
-  <div id="loading-overlay" class="overlay"><div class="spinner"></div></div>
-  <div id="success-container" class="success">
-    <div class="tick">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" aria-hidden="true">
-        <circle cx="26" cy="26" r="25" fill="none" stroke="#2C8C5E" stroke-width="2"/>
-        <path d="M14.1 27.2l7.1 7.2 16.7-16.8" fill="none" stroke="#2C8C5E" stroke-width="4"/>
-      </svg>
-      <h3>Vielen Dank!</h3>
-      <p>Wir haben deine Bestellung erhalten. Eine Bestätigung ist per E-Mail unterwegs.</p>
-    </div>
-  </div>
+      <p class="sub">Bitte fülle die Felder aus und wähle deine Wohnung.</p>
 
-  <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const cfg = window.BROETCHENFORM_CONFIG;
+      <div class="grid">
 
-    // Preise
-    const produkte = { "Haferbrötchen Röggelchen": 1.15, "Haferbrötchen Vital": 1.20, "Haferbrötchen Müsli": 1.30, "Mohnbrötchen": 0.85, "Sesam Dinkelbrötchen": 1.25, "Dinkelbrötchen": 1.20, "Schnittbrötchen": 0.60, "Kürbiskernbrötchen": 1.15, "Morgengoldbrötchen": 0.95, "Kraftkornbrötchen": 1.15, "Fitnessbrötchen": 1.15, "Käsebrötchen": 1.60, "Kürbiskernkäsebrötchen": 1.85, "Laugenkissen": 1.80, "Laugenstange": 1.60, "Laugenknoten": 1.40, "Milchbrötchen": 1.10, "Rosinenbrötchen": 1.15, "Chocobrötchen": 1.60, "Butter-Croissant": 1.90, "Butter-Schokocroissant": 2.15, "Dinkelcroissant Nougat": 2.55, "Dinkelcroissant Himbeere": 2.55, "Mohnschnecke": 2.35, "Rosinenschnecke": 2.40, "Muffin mit Schokolinsen": 2.50, "Streuseltaler": 2.05, "Nussecke": 2.75, "Berliner": 1.95, "Quarkbällchen": 0.65, "Amerikaner": 2.05, "Bauernbrot 900 g": 4.75, "Kassler 1000 g": 4.70, "Eiskruste 750 g": 4.70, "Unser Oskar 750 g": 4.55, "Schweizer 750 g": 4.65, "Gildebrot 750 g": 4.45, "Fitnessbrot 750 g": 4.85, "Kraftkornbrot 1000 g": 5.00, "Schlankmacher 550 g": 4.35, "Dinkelbrot NATUR 1000 g": 4.85, "Rosinenbrot 500 g": 4.30, "rustik. Baguette": 3.00, "Käse-Zwiebel- oder Tomatenbaguette": 3.45 };
-    const aufpreisWoche = 1.70;
-    const aufpreisWochenende = 2.20;
+        <div>
 
-    const s1 = document.getElementById('seite1');
-    const s2 = document.getElementById('seite2');
-    const lieferbereich = document.getElementById('lieferbereich');
+          <label for="name">Name</label>
 
-    function showErr(id,msg){
-      const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block';
-      if(id==='wohnung-error') document.getElementById('wohnung-picker').classList.add('invalid');
-      sendHeight();
-    }
-    function clearErrs(){
-      document.querySelectorAll('.error').forEach(e=>e.style.display='none');
-      document.getElementById('wohnung-picker').classList.remove('invalid');
-      document.querySelectorAll('.is-invalid').forEach(e=>e.classList.remove('is-invalid'));
-    }
-    function validatePage1(){
-      clearErrs(); let ok = true;
-      if(!document.getElementById('name').value.trim()){ showErr('name-error','Bitte gib deinen Namen ein.'); ok=false; }
-      const email = document.getElementById('email').value.trim();
-      if(!email){ showErr('email-error','Bitte gib deine E-Mail ein.'); ok=false; }
-      else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr('email-error','Bitte gültige E-Mail eingeben.'); ok=false; }
-      if(!document.querySelector('input[name="wohnung"]:checked')){ showErr('wohnung-error','Bitte Wohnung wählen.'); ok=false; }
-      return ok;
-    }
+          <input id="name" type="text" placeholder="Max Mustermann">
 
-    function wechsleSeite(z){
-      s1.style.display = (z==='s1')?'block':'none';
-      s2.style.display = (z==='s2')?'block':'none';
-      if(z==='s2' && !lieferbereich.childElementCount) neuenLiefertag();
-      sendHeight();
-    }
+          <div class="error" id="name-error"></div>
 
-    function optionenHTMLFor(date){
-      const d = date ? new Date(date) : null;
-      const isWE = d ? (d.getDay()===6 || d.getDay()===0) : false;
-      let html = '<option value="" disabled selected>Sorte wählen</option>';
-      for(const name of Object.keys(produkte)){
-        if(cfg.muesliNurAmWochenende && !isWE && name==='Müslibrötchen') continue;
-        html += `<option value="${name}">${name}</option>`;
-      }
-      return html;
-    }
+        </div>
 
-    function neuenLiefertag(){
-      const day = document.createElement('div'); day.className='day';
-      day.innerHTML = `
-        <div class="dayhead">
-          <div style="flex:1">
-            <label>Datum</label>
-            <input type="date" placeholder="dd.mm.yyyy" />
-          </div>
-        </div>
+        <div>
 
-        <div class="dynhdr"><div>Brötchensorte</div><div>Menge</div><div></div></div>
-        <div class="sorten"></div>
+          <label for="email">E-Mail</label>
 
-        <div class="dayfoot"><span class="cost" data-cost>Lieferkosten werden berechnet</span></div>
+          <input id="email" type="email" placeholder="max.mustermann@example.com" inputmode="email" autocomplete="email">
 
-        <button class="btn pill sm" data-add style="margin-top:12px">+ Sorte hinzufügen</button>
-        <button class="dayrm" title="Tag entfernen">&times;</button>
-      `;
-      lieferbereich.appendChild(day);
-      addSorte(day.querySelector('[data-add]'));
-      sendHeight();
-    }
+          <div class="error" id="email-error"></div>
 
-    function addSorte(btn){
-      const wrap = btn.closest('.day').querySelector('.sorten');
-      const row = document.createElement('div'); row.className='dynrow';
-      const date = btn.closest('.day').querySelector('input[type="date"]').value || '';
-      row.innerHTML = `
-        <select>${optionenHTMLFor(date)}</select>
-        <input type="number" min="1" value="1" />
-        <button class="remove" title="Sorte entfernen">&times;</button>
-      `;
-      wrap.appendChild(row);
-      updateTotal();
-      sendHeight();
-    }
+        </div>
 
-    function euro(n){ return n.toFixed(2).replace('.',',')+' €'; }
+        <div>
 
-    function updateTotal(){
-      let total = 0;
-      let lieferSum = 0;
-      document.querySelectorAll('.day').forEach(day=>{
-        const dateStr = day.querySelector('input[type="date"]').value;
-        const costEl = day.querySelector('[data-cost]');
-        if(!dateStr){
-          if(costEl) costEl.textContent = 'Lieferkosten werden berechnet';
-          return;
-        }
-        const d = new Date(dateStr);
-        const isWE = (d.getDay()===6 || d.getDay()===0);
-        const aufpreis = isWE ? aufpreisWochenende : aufpreisWoche;
-        if(costEl) costEl.textContent = `Lieferkosten +${euro(aufpreis)}`;
+          <label>Wohnung / Apartment</label>
 
-        let sum = 0;
-        day.querySelectorAll('.dynrow').forEach(r=>{
-          const s = r.querySelector('select').value;
-          const m = parseInt(r.querySelector('input[type="number"]').value) || 0;
-          sum += (produkte[s]||0) * m;
-        });
-        if(sum>0){ total += sum + aufpreis; lieferSum += aufpreis; }
-      });
-      document.getElementById('gesamtpreis').textContent = euro(total);
-      document.getElementById('lieferkostenHinweis').textContent = `davon Lieferkosten: ${euro(lieferSum)}`;
-    }
+          <div id="wohnung-picker" class="apts">
 
-    // Events
-    document.getElementById('btn-to-page2').addEventListener('click',()=>{ if(validatePage1()) wechsleSeite('s2'); else sendHeight(); });
-    document.getElementById('btn-to-page1').addEventListener('click',()=>wechsleSeite('s1'));
-    document.getElementById('btn-add-day').addEventListener('click',neuenLiefertag);
-    document.body.addEventListener('click',e=>{
-      const t = e.target;
-      if(t.matches('[data-add]')) addSorte(t);
-      if(t.matches('.remove')){ t.closest('.dynrow').remove(); updateTotal(); sendHeight(); }
-      if(t.matches('.dayrm')){ t.closest('.day').remove(); updateTotal(); sendHeight(); }
-    });
-    document.body.addEventListener('change',e=>{
-      if(e.target.matches('input[type="number"], select')) updateTotal();
-      if(e.target.matches('input[type="date"]')){
-        const day = e.target.closest('.day');
-        day.querySelectorAll('select').forEach(sel=>{
-          const prev = sel.value;
-          sel.innerHTML = optionenHTMLFor(e.target.value);
-          if([...sel.options].some(o=>o.value===prev)) sel.value = prev;
-        });
-        updateTotal();
-      }
-    });
+            <input id="w1" name="wohnung" type="radio" value="La Maison"><label class="apt" for="w1">La Maison</label>
 
-    async function submitForm(){
-      clearErrs();
-      const payload = {
-        name: document.getElementById('name').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        wohnung: (document.querySelector('input[name="wohnung"]:checked')||{}).value || '',
-        bestellungen: [],
-        gesamtpreis_client: document.getElementById('gesamtpreis').textContent
-      };
-      if(!validatePage1()) return;
+            <input id="w2" name="wohnung" type="radio" value="Suite Maritim"><label class="apt" for="w2">Suite Maritim</label>
 
-      let hasDay=false;
-      document.querySelectorAll('.day').forEach(day=>{
-        const date = day.querySelector('input[type="date"]').value;
-        if(!date) return;
-        const items = [];
-        day.querySelectorAll('.dynrow').forEach(r=>{
-          const s = r.querySelector('select').value;
-          const m = parseInt(r.querySelector('input[type="number"]').value)||0;
-          if(s && m>0) items.push({sorte:s, menge:m});
-        });
-        if(items.length){ hasDay=true; payload.bestellungen.push({datum:date, items}); }
-      });
-      if(!hasDay){
-        const e=document.getElementById('bestellung-error');
-        e.textContent='Ihre Bestellung ist leer. Bitte fügen Sie mindestens eine Sorte hinzu.'; e.style.display='block';
-        sendHeight(); return;
-      }
+            <input id="w3" name="wohnung" type="radio" value="Maisonette Beach"><label class="apt" for="w3">Maisonette Beach</label>
 
-      const overlay = document.getElementById('loading-overlay'); overlay.style.display='flex';
-      try{
-        // CORS-sicher: Simple Request, keine Antwort lesen
-        await fetch(cfg.googleAppScriptUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
+            <input id="w4" name="wohnung" type="radio" value="Cottage & Garden"><label class="apt" for="w4">Cottage & Garden</label>
 
-        document.getElementById('seite1').style.display='none';
-        document.getElementById('seite2').style.display='none';
-        document.getElementById('success-container').style.display='flex';
-        sendHeight();
-      }catch(err){
-        console.error(err);
-        alert('Es ist ein Fehler aufgetreten. Bitte später erneut versuchen.');
-      }finally{
-        overlay.style.display='none';
-      }
-    }
-    document.getElementById('btn-submit').addEventListener('click',submitForm);
-  });
-  </script>
+            <input id="w5" name="wohnung" type="radio" value="Malibu L"><label class="apt" for="w5">Malibu L</label>
+
+            <input id="w6" name="wohnung" type="radio" value="Malibu S"><label class="apt" for="w6">Malibu S</label>
+
+          </div>
+
+          <div class="error" id="wohnung-error"></div>
+
+        </div>
+
+        <div class="actions">
+
+          <button id="btn-to-page2" class="btn">Weiter zur Brötchenauswahl</button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Seite 2 -->
+
+    <div id="seite2" class="card" style="display:none">
+
+      <h2 class="section">Ihre Bestellung</h2>
+
+      <div id="lieferbereich"></div>
+
+      <div id="bestellung-error" class="error"></div>
+
+
+
+      <div style="margin-top:12px">
+
+        <button id="btn-add-day" class="btn pill sm">+ Weiteren Liefertag hinzufügen</button>
+
+      </div>
+
+
+
+      <div class="price">Gesamtpreis: <span id="gesamtpreis">0,00 €</span></div>
+
+      <div class="subprice" id="lieferkostenHinweis" aria-live="polite">davon Lieferkosten: 0,00 €</div>
+
+
+
+      <div class="actions">
+
+        <button id="btn-to-page1" class="btn alt">Zurück</button>
+
+        <button id="btn-submit" class="btn">Bestellung absenden</button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Overlays als zentrierte Layer -->
+
+  <div id="loading-overlay" class="overlay"><div class="spinner"></div></div>
+
+  <div id="success-container" class="success">
+
+    <div class="tick">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" aria-hidden="true">
+
+        <circle cx="26" cy="26" r="25" fill="none" stroke="#2C8C5E" stroke-width="2"/>
+
+        <path d="M14.1 27.2l7.1 7.2 16.7-16.8" fill="none" stroke="#2C8C5E" stroke-width="4"/>
+
+      </svg>
+
+      <h3>Vielen Dank!</h3>
+
+      <p>Wir haben deine Bestellung erhalten. Eine Bestätigung ist per E-Mail unterwegs.</p>
+
+    </div>
+
+  </div>
+
+
+
+  <script>
+
+  document.addEventListener('DOMContentLoaded', () => {
+
+    const cfg = window.BROETCHENFORM_CONFIG;
+
+
+
+    // Preise
+
+    const produkte = { "Haferbrötchen Röggelchen": 1.15, "Haferbrötchen Vital": 1.20, "Haferbrötchen Müsli": 1.30, "Mohnbrötchen": 0.85, "Sesam Dinkelbrötchen": 1.25, "Dinkelbrötchen": 1.20, "Schnittbrötchen": 0.60, "Kürbiskernbrötchen": 1.15, "Morgengoldbrötchen": 0.95, "Kraftkornbrötchen": 1.15, "Fitnessbrötchen": 1.15, "Käsebrötchen": 1.60, "Kürbiskernkäsebrötchen": 1.85, "Laugenkissen": 1.80, "Laugenstange": 1.60, "Laugenknoten": 1.40, "Milchbrötchen": 1.10, "Rosinenbrötchen": 1.15, "Chocobrötchen": 1.60, "Butter-Croissant": 1.90, "Butter-Schokocroissant": 2.15, "Dinkelcroissant Nougat": 2.55, "Dinkelcroissant Himbeere": 2.55, "Mohnschnecke": 2.35, "Rosinenschnecke": 2.40, "Muffin mit Schokolinsen": 2.50, "Streuseltaler": 2.05, "Nussecke": 2.75, "Berliner": 1.95, "Quarkbällchen": 0.65, "Amerikaner": 2.05, "Bauernbrot 900 g": 4.75, "Kassler 1000 g": 4.70, "Eiskruste 750 g": 4.70, "Unser Oskar 750 g": 4.55, "Schweizer 750 g": 4.65, "Gildebrot 750 g": 4.45, "Fitnessbrot 750 g": 4.85, "Kraftkornbrot 1000 g": 5.00, "Schlankmacher 550 g": 4.35, "Dinkelbrot NATUR 1000 g": 4.85, "Rosinenbrot 500 g": 4.30, "rustik. Baguette": 3.00, "Käse-Zwiebel- oder Tomatenbaguette": 3.45 };
+    const aufpreisWoche = 1.70;
+
+    const aufpreisWochenende = 2.20;
+
+
+
+    const s1 = document.getElementById('seite1');
+
+    const s2 = document.getElementById('seite2');
+
+    const lieferbereich = document.getElementById('lieferbereich');
+
+
+
+    function showErr(id,msg){
+
+      const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block';
+
+      if(id==='wohnung-error') document.getElementById('wohnung-picker').classList.add('invalid');
+
+      sendHeight();
+
+    }
+
+    function clearErrs(){
+
+      document.querySelectorAll('.error').forEach(e=>e.style.display='none');
+
+      document.getElementById('wohnung-picker').classList.remove('invalid');
+
+      document.querySelectorAll('.is-invalid').forEach(e=>e.classList.remove('is-invalid'));
+
+    }
+
+    function validatePage1(){
+
+      clearErrs(); let ok = true;
+
+      if(!document.getElementById('name').value.trim()){ showErr('name-error','Bitte gib deinen Namen ein.'); ok=false; }
+
+      const email = document.getElementById('email').value.trim();
+
+      if(!email){ showErr('email-error','Bitte gib deine E-Mail ein.'); ok=false; }
+
+      else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showErr('email-error','Bitte gültige E-Mail eingeben.'); ok=false; }
+
+      if(!document.querySelector('input[name="wohnung"]:checked')){ showErr('wohnung-error','Bitte Wohnung wählen.'); ok=false; }
+
+      return ok;
+
+    }
+
+
+
+    function wechsleSeite(z){
+
+      s1.style.display = (z==='s1')?'block':'none';
+
+      s2.style.display = (z==='s2')?'block':'none';
+
+      if(z==='s2' && !lieferbereich.childElementCount) neuenLiefertag();
+
+      sendHeight();
+
+    }
+
+
+
+    function optionenHTMLFor(date){
+
+      const d = date ? new Date(date) : null;
+
+      const isWE = d ? (d.getDay()===6 || d.getDay()===0) : false;
+
+      let html = '<option value="" disabled selected>Sorte wählen</option>';
+
+      for(const name of Object.keys(produkte)){
+
+        if(cfg.muesliNurAmWochenende && !isWE && name==='Müslibrötchen') continue;
+
+        html += `<option value="${name}">${name}</option>`;
+
+      }
+
+      return html;
+
+    }
+
+
+
+    function neuenLiefertag(){
+
+      const day = document.createElement('div'); day.className='day';
+
+      day.innerHTML = `
+
+        <div class="dayhead">
+
+          <div style="flex:1">
+
+            <label>Datum</label>
+
+            <input type="date" placeholder="dd.mm.yyyy" />
+
+          </div>
+
+        </div>
+
+
+
+        <div class="dynhdr"><div>Brötchensorte</div><div>Menge</div><div></div></div>
+
+        <div class="sorten"></div>
+
+
+
+        <div class="dayfoot"><span class="cost" data-cost>Lieferkosten werden berechnet</span></div>
+
+
+
+        <button class="btn pill sm" data-add style="margin-top:12px">+ Sorte hinzufügen</button>
+
+        <button class="dayrm" title="Tag entfernen">&times;</button>
+
+      `;
+
+      lieferbereich.appendChild(day);
+
+      addSorte(day.querySelector('[data-add]'));
+
+      sendHeight();
+
+    }
+
+
+
+    function addSorte(btn){
+
+      const wrap = btn.closest('.day').querySelector('.sorten');
+
+      const row = document.createElement('div'); row.className='dynrow';
+
+      const date = btn.closest('.day').querySelector('input[type="date"]').value || '';
+
+      row.innerHTML = `
+
+        <select>${optionenHTMLFor(date)}</select>
+
+        <input type="number" min="1" value="1" />
+
+        <button class="remove" title="Sorte entfernen">&times;</button>
+
+      `;
+
+      wrap.appendChild(row);
+
+      updateTotal();
+
+      sendHeight();
+
+    }
+
+
+
+    function euro(n){ return n.toFixed(2).replace('.',',')+' €'; }
+
+
+
+    function updateTotal(){
+
+      let total = 0;
+
+      let lieferSum = 0;
+
+      document.querySelectorAll('.day').forEach(day=>{
+
+        const dateStr = day.querySelector('input[type="date"]').value;
+
+        const costEl = day.querySelector('[data-cost]');
+
+        if(!dateStr){
+
+          if(costEl) costEl.textContent = 'Lieferkosten werden berechnet';
+
+          return;
+
+        }
+
+        const d = new Date(dateStr);
+
+        const isWE = (d.getDay()===6 || d.getDay()===0);
+
+        const aufpreis = isWE ? aufpreisWochenende : aufpreisWoche;
+
+        if(costEl) costEl.textContent = `Lieferkosten +${euro(aufpreis)}`;
+
+
+
+        let sum = 0;
+
+        day.querySelectorAll('.dynrow').forEach(r=>{
+
+          const s = r.querySelector('select').value;
+
+          const m = parseInt(r.querySelector('input[type="number"]').value) || 0;
+
+          sum += (produkte[s]||0) * m;
+
+        });
+
+        if(sum>0){ total += sum + aufpreis; lieferSum += aufpreis; }
+
+      });
+
+      document.getElementById('gesamtpreis').textContent = euro(total);
+
+      document.getElementById('lieferkostenHinweis').textContent = `davon Lieferkosten: ${euro(lieferSum)}`;
+
+    }
+
+
+
+    // Events
+
+    document.getElementById('btn-to-page2').addEventListener('click',()=>{ if(validatePage1()) wechsleSeite('s2'); else sendHeight(); });
+
+    document.getElementById('btn-to-page1').addEventListener('click',()=>wechsleSeite('s1'));
+
+    document.getElementById('btn-add-day').addEventListener('click',neuenLiefertag);
+
+    document.body.addEventListener('click',e=>{
+
+      const t = e.target;
+
+      if(t.matches('[data-add]')) addSorte(t);
+
+      if(t.matches('.remove')){ t.closest('.dynrow').remove(); updateTotal(); sendHeight(); }
+
+      if(t.matches('.dayrm')){ t.closest('.day').remove(); updateTotal(); sendHeight(); }
+
+    });
+
+    document.body.addEventListener('change',e=>{
+
+      if(e.target.matches('input[type="number"], select')) updateTotal();
+
+      if(e.target.matches('input[type="date"]')){
+
+        const day = e.target.closest('.day');
+
+        day.querySelectorAll('select').forEach(sel=>{
+
+          const prev = sel.value;
+
+          sel.innerHTML = optionenHTMLFor(e.target.value);
+
+          if([...sel.options].some(o=>o.value===prev)) sel.value = prev;
+
+        });
+
+        updateTotal();
+
+      }
+
+    });
+
+
+
+    async function submitForm(){
+
+      clearErrs();
+
+      const payload = {
+
+        name: document.getElementById('name').value.trim(),
+
+        email: document.getElementById('email').value.trim(),
+
+        wohnung: (document.querySelector('input[name="wohnung"]:checked')||{}).value || '',
+
+        bestellungen: [],
+
+        gesamtpreis_client: document.getElementById('gesamtpreis').textContent
+
+      };
+
+      if(!validatePage1()) return;
+
+
+
+      let hasDay=false;
+
+      document.querySelectorAll('.day').forEach(day=>{
+
+        const date = day.querySelector('input[type="date"]').value;
+
+        if(!date) return;
+
+        const items = [];
+
+        day.querySelectorAll('.dynrow').forEach(r=>{
+
+          const s = r.querySelector('select').value;
+
+          const m = parseInt(r.querySelector('input[type="number"]').value)||0;
+
+          if(s && m>0) items.push({sorte:s, menge:m});
+
+        });
+
+        if(items.length){ hasDay=true; payload.bestellungen.push({datum:date, items}); }
+
+      });
+
+      if(!hasDay){
+
+        const e=document.getElementById('bestellung-error');
+
+        e.textContent='Ihre Bestellung ist leer. Bitte fügen Sie mindestens eine Sorte hinzu.'; e.style.display='block';
+
+        sendHeight(); return;
+
+      }
+
+
+
+      const overlay = document.getElementById('loading-overlay'); overlay.style.display='flex';
+
+      try{
+
+        // CORS-sicher: Simple Request, keine Antwort lesen
+
+        await fetch(cfg.googleAppScriptUrl, {
+
+          method: 'POST',
+
+          mode: 'no-cors',
+
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+
+          body: JSON.stringify(payload)
+
+        });
+
+
+
+        document.getElementById('seite1').style.display='none';
+
+        document.getElementById('seite2').style.display='none';
+
+        document.getElementById('success-container').style.display='flex';
+
+        sendHeight();
+
+      }catch(err){
+
+        console.error(err);
+
+        alert('Es ist ein Fehler aufgetreten. Bitte später erneut versuchen.');
+
+      }finally{
+
+        overlay.style.display='none';
+
+      }
+
+    }
+
+    document.getElementById('btn-submit').addEventListener('click',submitForm);
+
+  });
+
+  </script>
+
 </body>
+
 </html>
