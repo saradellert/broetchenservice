@@ -30,10 +30,10 @@
 
   <style>
     :root {
-      --card: #FFFFFF;        /* Farbe der Formular-Karte */
-      --text: #292826;        /* Haupttextfarbe */
-      --brand: #292826;       /* Akzent- und Buttonfarbe */
-      --border: #E2E2E2;      /* Farbe für Ränder */
+      --card: #FFFFFF;         /* Farbe der Formular-Karte */
+      --text: #292826;         /* Haupttextfarbe */
+      --brand: #292826;         /* Akzent- und Buttonfarbe */
+      --border: #E2E2E2;       /* Farbe für Ränder */
       --shadow: 0 8px 30px rgba(0,0,0,.08); /* Weicherer Schatten */
       --danger: #D9534F;
       --ok: #2C8C5E;
@@ -54,8 +54,6 @@
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       min-height: 100svh;
       padding: 24px;
-
-      /* Mobile Scroll-Verbesserung (neutral, verhindert keine Scrolls) */
       overflow-x: hidden;
       overscroll-behavior: contain;
       touch-action: manipulation;
@@ -139,7 +137,9 @@
     }
     .apts.invalid .apt { border-color: var(--danger); }
 
-    .actions{display:flex;gap:12px;flex-direction: column-reverse; /* Button-Reihenfolge geändert */ margin-top:24px}
+    /* Buttons sind jetzt korrekt untereinander */
+    .actions{display:flex;gap:12px;flex-direction: column; margin-top:24px}
+    
     .btn {
       border: 2px solid var(--brand);
       background: var(--brand);
@@ -184,12 +184,11 @@
     .dayrm{position:absolute;top:12px;right:12px;border:none;background:transparent;color:var(--muted);width:32px;height:32px;border-radius:50%;line-height:30px;font-size:18px;cursor:pointer;transition:var(--transition);}
     .dayrm:hover { background: #fde8e7; color: var(--danger); }
 
-    /* Spalten minimal verbreitert, damit +/- gut reinpasst (nur diese Zahlen-Spalte) */
     .dynhdr{display:grid;grid-template-columns:1fr 120px 32px;gap:10px;font-size:.8rem;color:#81807d;margin:6px 4px 6px 4px}
     @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
     .dynrow{display:grid;grid-template-columns:1fr 120px 32px;gap:10px;align-items:center;margin-top:6px; animation: slideIn 0.3s ease-out both;}
 
-    /* Mengen-Steuerung (hinzugefügt) */
+    /* Mengen-Steuerung mit +/- Buttons */
     .qty-wrap { display:flex; align-items:center; justify-content:center; gap:6px; }
     .qty-btn { border:none; background:var(--brand); color:#fff; width:28px; height:28px; border-radius:8px; font-weight:700; cursor:pointer; }
     .qty-btn:active { opacity:.85; }
@@ -210,8 +209,43 @@
     .tick svg{width:64px;height:64px;animation:pop .35s ease-out both .2s}
     .tick h3 { font-size: 1.5rem; margin-bottom: 0; }
     .tick p { max-width: 320px; color: var(--muted); }
-
     @keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+
+    /* --- NEU: HINWEIS-GATE CSS --- */
+    .gate-overlay{
+      position:fixed; inset:0; z-index:12000;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(4px);
+      display:flex; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .gate-hidden{ display:none; }
+    .gate-card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow);
+      width: 100%; max-width: 760px; padding: 24px 24px 20px;
+      animation: fadeIn .35s ease-out both;
+    }
+    .gate-card h3{ margin:0 0 6px; }
+    .gate-actions{ margin-top:16px; display:flex; gap:12px; justify-content:flex-end; }
+    
+    /* --- Scrollbar-Fix für bessere Sichtbarkeit auf allen Geräten --- */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
 
     /* Mobile Anpassungen */
     @media (max-width: 600px){
@@ -238,10 +272,28 @@
       .day{padding:14px}
       .dayhead{margin-bottom:10px;padding-bottom:8px;padding-right:40px}
       .dayrm{top:8px;right:8px;width:28px;height:28px;line-height:26px;font-size:16px}
+      
+      /* Mobile Anpassung für Gate */
+      .gate-card{ border-radius: 16px; padding: 20px; }
+      .gate-actions{ justify-content:stretch; }
     }
   </style>
 </head>
 <body>
+
+  <div id="gate" class="gate-overlay" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+    <div class="gate-card" role="document" onclick="event.stopPropagation()">
+      <h3 id="gate-title" class="section">Wichtiger Hinweis</h3>
+      <p class="sub" style="margin-bottom:12px;">
+        Bestellungen für Lieferungen am <strong>Samstag, Sonntag oder Montag</strong>
+        bitte <strong>spätestens bis Freitag, 12:00&nbsp;Uhr</strong> aufgeben.
+      </p>
+      <div class="gate-actions">
+        <button id="gate-ok" class="btn">Okay, verstanden</button>
+      </div>
+    </div>
+  </div>
+
   <div class="shell">
     <div id="seite1" class="card fade-in">
       <h2 class="section">Allgemeine Informationen</h2>
@@ -307,9 +359,21 @@
   </div>
 
   <script>
-  // Der JavaScript-Teil bleibt unverändert, da er bereits korrekt war.
-  // Hier den kompletten JavaScript-Code aus der vorherigen Antwort einfügen.
   document.addEventListener('DOMContentLoaded', () => {
+    /* --- NEU: HINWEIS-GATE LOGIK --- */
+    const gate = document.getElementById('gate');
+    const ok = document.getElementById('gate-ok');
+
+    function closeGate(){
+      gate.classList.add('gate-hidden');
+      if (typeof sendHeight === 'function') sendHeight();
+    }
+    gate.addEventListener('click', closeGate);
+    ok.addEventListener('click', (e) => { e.stopPropagation(); closeGate(); });
+    // Fokus auf den Button setzen für Barrierefreiheit
+    setTimeout(() => { try { ok.focus(); } catch(_){} if (typeof sendHeight==='function') sendHeight(); }, 50);
+
+    /* --- FORMULAR LOGIK (UNVERÄNDERT) --- */
     const cfg = window.BROETCHENFORM_CONFIG;
 
     const produkte = { "Haferbrötchen Röggelchen": 1.15, "Haferbrötchen Vital": 1.20, "Haferbrötchen Müsli": 1.30, "Mohnbrötchen": 0.85, "Sesam Dinkelbrötchen": 1.25, "Dinkelbrötchen": 1.20, "Schnittbrötchen": 0.60, "Kürbiskernbrötchen": 1.15, "Morgengoldbrötchen": 0.95, "Kraftkornbrötchen": 1.15, "Fitnessbrötchen": 1.15, "Käsebrötchen": 1.60, "Kürbiskernkäsebrötchen": 1.85, "Laugenkissen": 1.80, "Laugenstange": 1.60, "Laugenknoten": 1.40, "Milchbrötchen": 1.10, "Rosinenbrötchen": 1.15, "Chocobrötchen": 1.60, "Butter-Croissant": 1.90, "Butter-Schokocroissant": 2.15, "Dinkelcroissant Nougat": 2.55, "Dinkelcroissant Himbeere": 2.55, "Mohnschnecke": 2.35, "Rosinenschnecke": 2.40, "Muffin mit Schokolinsen": 2.50, "Streuseltaler": 2.05, "Nussecke": 2.75, "Berliner": 1.95, "Quarkbällchen": 0.65, "Amerikaner": 2.05, "Bauernbrot 900 g": 4.75, "Kassler 1000 g": 4.70, "Eiskruste 750 g": 4.70, "Unser Oskar 750 g": 4.55, "Schweizer 750 g": 4.65, "Gildebrot 750 g": 4.45, "Fitnessbrot 750 g": 4.85, "Kraftkornbrot 1000 g": 5.00, "Schlankmacher 550 g": 4.35, "Dinkelbrot NATUR 1000 g": 4.85, "Rosinenbrot 500 g": 4.30, "rustik. Baguette": 3.00, "Käse- Zwiebel- oder Tomatenbaguette": 3.45 };
@@ -434,7 +498,7 @@
         day.querySelectorAll('.dynrow').forEach(r => {
           const s = r.querySelector('select').value;
           const mInput = r.querySelector('.qty-input');
-          const m = parseInt(mInput ? mInput.value : (r.querySelector('input[type="number"]')?.value), 10) || 0;
+          const m = parseInt(mInput.value, 10) || 0;
           sum += (produkte[s] || 0) * m;
         });
 
@@ -474,14 +538,11 @@
 
     document.body.addEventListener('change', e => {
       if (e.target.matches('select')) updateTotal();
-
-      // Zahleneingabe direkt geändert
       if (e.target.matches('.qty-input')) {
         const v = Math.max(1, parseInt(e.target.value || '1', 10));
         e.target.value = String(v);
         updateTotal();
       }
-
       if (e.target.matches('input[type="date"]')) {
         const day = e.target.closest('.day');
         day.querySelectorAll('select').forEach(sel => {
@@ -513,7 +574,7 @@
         day.querySelectorAll('.dynrow').forEach(r => {
           const s = r.querySelector('select').value;
           const mInput = r.querySelector('.qty-input');
-          const m = parseInt(mInput ? mInput.value : (r.querySelector('input[type="number"]')?.value), 10) || 0;
+          const m = parseInt(mInput.value, 10) || 0;
           if (s && m > 0) items.push({ sorte: s, menge: m });
         });
         if (items.length) { hasDay = true; payload.bestellungen.push({ datum: date, items }); }
