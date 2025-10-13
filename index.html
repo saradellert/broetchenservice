@@ -30,7 +30,6 @@
 
   <style>
     :root {
-      --bg: #F0F0F0;         /* Hintergrund der Seite */
       --card: #FFFFFF;        /* Farbe der Formular-Karte */
       --text: #292826;        /* Haupttextfarbe */
       --brand: #292826;       /* Akzent- und Buttonfarbe */
@@ -39,25 +38,22 @@
       --danger: #D9534F;
       --ok: #2C8C5E;
       --muted: #6a6a69;
-      --radius-card: 20px;   /* Größerer Radius für die Karte */
+      --radius-card: 20px;
       --radius-input: 12px;
       --radius-btn: 12px;
       --ctrl-pad: .9rem 1rem;
       --gap: 16px;
-      --transition: all 0.25s ease; /* Standard-Animation */
+      --transition: all 0.25s ease;
     }
     *{box-sizing:border-box}
     html{font-size:16px}
     body {
       margin: 0;
       color: var(--text);
-      background: var(--bg); /* Hintergrundfarbe wie gewünscht */
+      background: transparent; /* Hintergrund transparent für Wix */
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       min-height: 100svh;
       padding: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
     .shell {
       width: 100%;
@@ -119,7 +115,7 @@
     .apts input {display: none}
     .apt {
       border: 2px solid var(--border);
-      border-radius: var(--radius-btn);
+      border-radius: 999px; /* Komplett abgerundet */
       padding: .9rem 1rem;
       text-align: center;
       cursor: pointer;
@@ -138,7 +134,7 @@
     }
     .apts.invalid .apt { border-color: var(--danger); }
 
-    .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;margin-top:24px}
+    .actions{display:flex;gap:12px;flex-direction: column-reverse; /* Button-Reihenfolge geändert */ margin-top:24px}
     .btn {
       border: 2px solid var(--brand);
       background: var(--brand);
@@ -197,7 +193,7 @@
 
     .success{display:none;position:fixed;inset:0;z-index:10000;background:rgba(255,255,255,.9);backdrop-filter:blur(4px);align-items:center;justify-content:center;text-align:center; padding: 20px;}
     .tick{display:flex;flex-direction:column;align-items:center;gap:10px}
-    .tick svg{width:64px;height:64px;animation:pop .35s ease-out both .2s} /* Korrigierte Größe und Animation */
+    .tick svg{width:64px;height:64px;animation:pop .35s ease-out both .2s}
     .tick h3 { font-size: 1.5rem; margin-bottom: 0; }
     .tick p { max-width: 320px; color: var(--muted); }
     @keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
@@ -205,7 +201,7 @@
     /* Mobile Anpassungen */
     @media (max-width: 600px){
       html{font-size:15px}
-      body{padding:0; background: var(--card);} /* Auf Mobilgeräten füllt die Karte alles aus */
+      body{padding:0;}
       .shell { padding: 0; }
       .card {
           padding: 24px;
@@ -273,8 +269,8 @@
       <div class="subprice" id="lieferkostenHinweis" aria-live="polite">davon Lieferkosten: 0,00 €</div>
 
       <div class="actions">
-        <button id="btn-to-page1" class="btn alt">Zurück</button>
         <button id="btn-submit" class="btn">Bestellung absenden</button>
+        <button id="btn-to-page1" class="btn alt">Zurück</button>
       </div>
     </div>
   </div>
@@ -292,6 +288,8 @@
   </div>
 
   <script>
+  // Der JavaScript-Teil bleibt unverändert, da er bereits korrekt war.
+  // Hier den kompletten JavaScript-Code aus der vorherigen Antwort einfügen.
   document.addEventListener('DOMContentLoaded', () => {
     const cfg = window.BROETCHENFORM_CONFIG;
 
