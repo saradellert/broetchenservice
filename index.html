@@ -220,9 +220,49 @@
       .dayhead{margin-bottom:10px;padding-bottom:8px;padding-right:40px}
       .dayrm{top:8px;right:8px;width:28px;height:28px;line-height:26px;font-size:16px}
     }
+
+    /* ========= HINWEIS-GATE (nur hinzugefügt, Rest unverändert) ========= */
+    .gate-overlay{
+      position:fixed; inset:0; z-index:12000;
+      background: rgba(0,0,0,.55);
+      display:flex; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .gate-hidden{ display:none; }
+    .gate-card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow);
+      width: 100%; max-width: 760px; padding: 24px 24px 20px;
+      animation: fadeIn .35s ease-out both;
+    }
+    .gate-card h3{ margin:0 0 6px; }
+    .gate-actions{ margin-top:16px; display:flex; gap:12px; justify-content:flex-end; }
+    @media (max-width:600px){
+      .gate-card{ border-radius: 16px; padding: 20px; }
+      .gate-actions{ justify-content:stretch; }
+    }
+    /* ========= ENDE HINWEIS-GATE ========= */
   </style>
 </head>
 <body>
+
+  <!-- ========= HINWEIS-GATE OVERLAY (nur hinzugefügt) ========= -->
+  <div id="gate" class="gate-overlay" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+    <div class="gate-card" role="document" onclick="event.stopPropagation()">
+      <h3 id="gate-title" class="section">Wichtiger Hinweis</h3>
+      <p class="sub" style="margin-bottom:12px;">
+        Bestellungen für Lieferungen am <strong>Samstag, Sonntag oder Montag</strong>
+        bitte <strong>spätestens bis Freitag, 12:00&nbsp;Uhr</strong> aufgeben.
+      </p>
+      <div class="gate-actions">
+        <button id="gate-ok" class="btn">Okay, verstanden</button>
+      </div>
+    </div>
+  </div>
+  <!-- ========= ENDE HINWEIS-GATE ========= -->
+
   <div class="shell">
     <div id="seite1" class="card fade-in">
       <h2 class="section">Allgemeine Informationen</h2>
@@ -286,6 +326,25 @@
       <p>Wir haben deine Bestellung erhalten. Eine Bestätigung ist per E-Mail unterwegs.</p>
     </div>
   </div>
+
+  <!-- ========= HINWEIS-GATE SCRIPT (nur hinzugefügt) ========= -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const gate = document.getElementById('gate');
+      const ok = document.getElementById('gate-ok');
+
+      function closeGate(){
+        gate.classList.add('gate-hidden');
+        if (typeof sendHeight === 'function') sendHeight();
+      }
+
+      gate.addEventListener('click', closeGate);
+      ok.addEventListener('click', (e) => { e.stopPropagation(); closeGate(); });
+
+      setTimeout(() => { try { ok.focus(); } catch(_){} if (typeof sendHeight==='function') sendHeight(); }, 0);
+    });
+  </script>
+  <!-- ========= ENDE HINWEIS-GATE SCRIPT ========= -->
 
   <script>
   // Der JavaScript-Teil bleibt unverändert, da er bereits korrekt war.
